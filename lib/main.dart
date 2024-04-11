@@ -1,0 +1,34 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+
+import 'data/services/injection/dependency_injection.dart';
+import 'res/colors/colors.dart';
+import 'views/splash/splash_screen.dart';
+
+void main() async {
+  await ScreenUtil.ensureScreenSize();
+  setup();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return ScreenUtilInit(builder: (_, context) {
+      return GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Checkedln',
+        theme: ThemeData(
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: getIt<ColorsFile>().primaryColor),
+          useMaterial3: true,
+        ),
+        home: const SplashScreen(),
+      );
+    });
+  }
+}

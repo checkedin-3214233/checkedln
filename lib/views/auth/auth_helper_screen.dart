@@ -1,0 +1,134 @@
+import 'package:checkedln/data/services/injection/dependency_injection.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+
+import '../../res/colors/colors.dart';
+
+Widget authButton(Color color, Text text, Function() onPressed) {
+  return InkWell(
+    onTap: onPressed,
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
+      alignment: Alignment.center,
+      width: MediaQuery.of(Get.context!).size.width,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(11.5.w.h),
+      ),
+      child: text,
+    ),
+  ).marginOnly(
+    top: 16.h,
+  );
+}
+
+Widget textTwoTittle(String tittle1, Text tittle2, Function() onPressed) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Text(tittle1,
+          style: TextStyle(
+              fontSize: 14.sp,
+              color: getIt<ColorsFile>().textColor1,
+              fontWeight: FontWeight.w400)),
+      InkWell(onTap: onPressed, child: tittle2)
+    ],
+  );
+}
+
+AppBar appBar() {
+  return AppBar(
+    elevation: 0,
+    leading: InkWell(
+      onTap: () {
+        Get.back();
+      },
+      child: Image.asset(
+        "assets/images/back_btn.webp",
+        height: 40.h,
+        width: 40.w,
+      ),
+    ),
+  );
+}
+
+Widget authHeading(String heading) {
+  return Text(
+    heading,
+    textAlign: TextAlign.start,
+    style: TextStyle(
+        fontSize: 28.sp,
+        color: getIt<ColorsFile>().secondaryColor,
+        fontWeight: FontWeight.w800),
+  );
+}
+
+Widget authSubHeading(String heading) {
+  return Text(
+    heading,
+    textAlign: TextAlign.start,
+    style: TextStyle(
+        fontSize: 16.sp,
+        color: getIt<ColorsFile>().textColor1,
+        fontWeight: FontWeight.w400),
+  );
+}
+
+Widget phoneNumberField(bool isNumber) {
+  return TextField(
+    keyboardType: TextInputType.phone,
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: Color(0xFFF5F4F6), // Background color
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFFD189F0)), // Border color
+        borderRadius: BorderRadius.circular(15.0), // Border radius
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFFF5F4F6)),
+        borderRadius: BorderRadius.circular(15.0), // Border radius
+      ),
+      hintText: isNumber ? 'Enter Phone Number' : "+91",
+
+      hintStyle: TextStyle(
+        color: Color(0xFF28222A), // Text color
+        fontWeight: FontWeight.w500, // Text weight
+        fontSize: 16.0, // Text size
+      ),
+    ),
+  ).marginOnly(right: 8.w);
+}
+
+Widget userName(
+    TextEditingController controller, TextInputType type, String hintText) {
+  return TextField(
+    readOnly: hintText == "Date of Birth*" || hintText == "Select Gender",
+    controller: controller,
+    keyboardType: type,
+    decoration: InputDecoration(
+      suffixIcon: hintText == "Date of Birth*"
+          ? Image.asset("assets/images/calender.webp")
+          : hintText == "Select Gender"
+              ? Image.asset("assets/images/drop_down.webp")
+              : null,
+      filled: true,
+      fillColor: Color(0xFFF5F4F6), // Background color
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFFD189F0)), // Border color
+        borderRadius: BorderRadius.circular(15.0), // Border radius
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFFF5F4F6)),
+        borderRadius: BorderRadius.circular(15.0), // Border radius
+      ),
+      hintText: hintText,
+      hintStyle: TextStyle(
+        color: getIt<ColorsFile>().textColor4, // Text color
+        fontWeight: FontWeight.w500, // Text weight
+        fontSize: 12.0.sp, // Text size
+      ),
+    ),
+  ).marginSymmetric(vertical: 3.h);
+}
