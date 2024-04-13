@@ -1,5 +1,4 @@
-import 'package:checkedln/controller/auth_controller.dart';
-import 'package:checkedln/data/injection/dependency_injection.dart';
+import 'package:checkedln/data/services/injection/dependency_injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -78,12 +77,8 @@ Widget authSubHeading(String heading) {
 }
 
 Widget phoneNumberField(bool isNumber) {
-  AuthController authController = Get.find<AuthController>();
   return TextField(
     keyboardType: TextInputType.phone,
-    controller: isNumber
-        ? authController.phoneNumberController
-        : authController.countryCodeController,
     decoration: InputDecoration(
       filled: true,
       fillColor: Color(0xFFF5F4F6), // Background color

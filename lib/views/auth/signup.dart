@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../controller/auth_controller.dart';
-import '../../data/injection/dependency_injection.dart';
+import '../../data/services/injection/dependency_injection.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
 import 'otp_verification.dart';
@@ -17,7 +16,6 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  AuthController authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     ColorsFile colorsFile = getIt<ColorsFile>();
@@ -46,8 +44,8 @@ class _SignUpState extends State<SignUp> {
                   style:
                       TextStyle(color: colorsFile.whiteColor, fontSize: 16.sp),
                 ),
-                () async {
-                  await authController.validatePhoneNumber();
+                () {
+                  Get.to(() => OtpVerification());
                 },
               ),
               textTwoTittle(

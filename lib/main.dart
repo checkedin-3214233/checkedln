@@ -1,23 +1,14 @@
-import 'package:checkedln/data/local/cache_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'data/injection/dependency_injection.dart';
+
+import 'data/services/injection/dependency_injection.dart';
 import 'res/colors/colors.dart';
 import 'views/splash/splash_screen.dart';
 
 void main() async {
-  await dotenv.load(fileName: ".env");
-  WidgetsFlutterBinding.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
   setup();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  getIt<CacheManager>().init();
   runApp(const MyApp());
 }
 

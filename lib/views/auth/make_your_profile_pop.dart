@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../data/injection/dependency_injection.dart';
+import '../../data/services/injection/dependency_injection.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
 

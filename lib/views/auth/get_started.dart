@@ -1,9 +1,8 @@
-import 'package:checkedln/controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../data/injection/dependency_injection.dart';
+import '../../data/services/injection/dependency_injection.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
 import 'login.dart';
@@ -18,7 +17,6 @@ class GetStarted extends StatefulWidget {
 
 class _GetStartedState extends State<GetStarted> {
   ColorsFile colorsFile = getIt<ColorsFile>();
-  AuthController _authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
