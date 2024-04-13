@@ -3,7 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 
-import '../../data/services/injection/dependency_injection.dart';
+import '../../controller/auth_controller.dart';
+import '../../data/injection/dependency_injection.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
 import 'get_started.dart';
@@ -17,6 +18,7 @@ class OtpVerification extends StatefulWidget {
 
 class _OtpVerificationState extends State<OtpVerification> {
   ColorsFile colorsFile = getIt<ColorsFile>();
+  AuthController authController = Get.find<AuthController>();
   final defaultPinTheme = PinTheme(
     width: 53.w,
     height: 50.h,
@@ -51,12 +53,10 @@ class _OtpVerificationState extends State<OtpVerification> {
                 defaultPinTheme: defaultPinTheme,
                 focusedPinTheme: defaultPinTheme,
                 submittedPinTheme: defaultPinTheme,
-                validator: (s) {
-                  return s == '222222' ? null : 'Pin is incorrect';
-                },
                 pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                 showCursor: true,
-                onCompleted: (pin) => print(pin),
+                onCompleted: (pin) async =>
+                    {Get.find<AuthController>().verifyOtp(pin)},
               ).marginOnly(top: 16.h, bottom: 8.h),
               textTwoTittle(
                       "Didn't received the OTP? ",
@@ -69,18 +69,22 @@ class _OtpVerificationState extends State<OtpVerification> {
                       ),
                       () {})
                   .marginOnly(top: 8.h, bottom: 8.h),
-              authButton(
-                getIt<ColorsFile>().primaryColor,
-                Text(
-                  "Verify",
-                  textAlign: TextAlign.center,
-                  style:
-                      TextStyle(color: colorsFile.whiteColor, fontSize: 16.sp),
-                ),
-                () {
-                  Get.to(() => GetStarted());
-                },
-              ),
+              Obx(
+                () => authController.isOtpVerification.value
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : authButton(
+                        getIt<ColorsFile>().primaryColor,
+                        Text(
+                          "Verify",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: colorsFile.whiteColor, fontSize: 16.sp),
+                        ),
+                        () {},
+                      ),
+              )
             ],
           ),
           textTwoTittle(

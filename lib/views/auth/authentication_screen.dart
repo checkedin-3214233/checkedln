@@ -1,9 +1,10 @@
-import 'package:checkedln/data/services/injection/dependency_injection.dart';
+import 'package:checkedln/data/injection/dependency_injection.dart';
 import 'package:checkedln/views/auth/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../controller/auth_controller.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
 import 'login.dart';
@@ -17,6 +18,8 @@ class AuthenticationScreen extends StatefulWidget {
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
   ColorsFile colorsFile = getIt<ColorsFile>();
+  AuthController authController = Get.put(AuthController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
