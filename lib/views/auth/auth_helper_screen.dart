@@ -1,5 +1,6 @@
 import 'package:checkedln/controller/auth_controller.dart';
 import 'package:checkedln/data/injection/dependency_injection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -108,7 +109,54 @@ Widget phoneNumberField(bool isNumber) {
 
 Widget userName(
     TextEditingController controller, TextInputType type, String hintText) {
+  const gender = ["male", "female", "other"];
   return TextField(
+    textInputAction: TextInputAction.next,
+    onTap: () async {
+      if (hintText == "Date of Birth*") {
+        final DateTime? picked = await showDatePicker(
+          context: Get.context!,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(150),
+          lastDate: DateTime.now(),
+        );
+        if (picked != null) {
+          controller.text = picked.toString().substring(0, 10);
+        }
+      }
+      if (hintText == "Select Gender") {
+        showDialog(
+          context: Get.context!,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Select an Option'),
+              content: DropdownButton(
+                hint: Text(controller.text),
+                items: gender.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(option == "male"
+                              ? Icons.male
+                              : option == "female"
+                                  ? Icons.female
+                                  : Icons.error),
+                          Text(option)
+                        ]),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  controller.text = newValue.toString();
+                  Navigator.of(context).pop();
+                },
+              ),
+            );
+          },
+        );
+      }
+    },
     readOnly: hintText == "Date of Birth*" || hintText == "Select Gender",
     controller: controller,
     keyboardType: type,

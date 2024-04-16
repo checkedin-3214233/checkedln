@@ -17,14 +17,14 @@ class AuthServices {
   Future<dynamic> checkUser(String number) async {
     log(_auth + _checkUser);
     Map<String, String> data = {"number": number};
-    //try {
-    Response response =
-        await dioNetwork.postData(_auth + _checkUser, data: data);
-    return response;
-    // } catch (e) {
-    //   log(e.toString());
-    //   return null;
-    // }
+    try {
+      Response response =
+          await dioNetwork.postData(_auth + _checkUser, data: data);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
   }
 
   Future<dynamic> loginUser(String number) async {
@@ -43,23 +43,27 @@ class AuthServices {
 
   Future<dynamic> signup(
       String number,
-      String email,
+      String userName,
       String name,
       String profileImageUrl,
       DateTime dateOfBirth,
       String gender,
-      List<String> images) async {
+      List<String> images,
+      String bio) async {
     Map<String, String> data = {
       "name": name,
-      "email": email,
+      "userName": userName,
       "phone": number,
       "profileImageUrl": profileImageUrl,
       "notificationToken":
           getIt<CacheManager>().getNotificationSubscriptionId(),
       "dateOfBirth": dateOfBirth.toUtc().toString(),
       "gender": gender,
-      "userImages": images.toString()
+      "userImages": images.toString(),
+      "bio": bio
     };
+
+    log(data.toString());
 
     try {
       Response response =

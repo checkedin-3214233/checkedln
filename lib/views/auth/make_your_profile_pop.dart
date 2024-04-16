@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../controller/auth_controller.dart';
 import '../../data/injection/dependency_injection.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
@@ -15,6 +19,7 @@ class MakeYourProfilePop extends StatefulWidget {
 
 class _MakeYourProfilePopState extends State<MakeYourProfilePop> {
   ColorsFile colorsFile = getIt<ColorsFile>();
+  AuthController _authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +36,9 @@ class _MakeYourProfilePopState extends State<MakeYourProfilePop> {
               authHeading("Make Your Profile Pop"),
               authSubHeading(
                   "Help others find you! A few more pics go a long way."),
-              GridView.builder(
+              Obx(() => GridView.builder(
                   shrinkWrap: true,
-                  itemCount: 6,
+                  itemCount: _authController.userImages.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3, // Number of columns
                   ),
@@ -46,42 +51,72 @@ class _MakeYourProfilePopState extends State<MakeYourProfilePop> {
                             12.0), // Radius of the rounded corners
                       ),
                       child: Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12.0),
-                          child: Image.asset(
-                            index == 0
-                                ? "assets/images/profile_pic.webp"
-                                : "assets/images/add_circle.webp",
-                            fit: BoxFit.cover,
-                            width: index == 0 ? 114.w : 32.w,
-                            height: index == 0 ? 111.h : 32.h,
+                        child: InkWell(
+                          onTap: () async {
+                            if (index == 0) {
+                              Get.rawSnackbar(
+                                  message: "Profile Image Can'nt be changed");
+                            } else {
+                              XFile? image = await ImagePicker()
+                                  .pickImage(source: ImageSource.gallery);
+                              if (image != null) {
+                                _authController.userImages[index] = image.path;
+                              }
+                            }
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: _authController.userImages[index].isNotEmpty
+                                ? Image.file(
+                                    File(_authController.userImages[index]),
+                                    fit: BoxFit.cover,
+                                    width: 114.w,
+                                    height: 111.h,
+                                  )
+                                : Image.asset(
+                                    "assets/images/add_circle.webp",
+                                    fit: BoxFit.cover,
+                                    width: 32.w,
+                                    height: 32.h,
+                                  ),
                           ),
                         ),
                       ),
                     );
-                  }),
+                  })),
               textTwoTittle(
-                      "+ ",
-                      Text(
-                        "Add more",
-                        style: TextStyle(
-                            fontSize: 16.sp,
-                            color: getIt<ColorsFile>().textColor5,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      () {})
-                  .marginOnly(top: 16.h),
+                  "+ ",
+                  Text(
+                    "Add more",
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: getIt<ColorsFile>().textColor5,
+                        fontWeight: FontWeight.w600),
+                  ), () async {
+                XFile? image =
+                    await ImagePicker().pickImage(source: ImageSource.gallery);
+                if (image != null) {
+                  _authController.userImages.add(image.path);
+                }
+              }).marginOnly(top: 16.h),
             ],
           ),
-          authButton(
-            getIt<ColorsFile>().primaryColor,
-            Text(
-              "Next",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: colorsFile.whiteColor, fontSize: 16.sp),
-            ),
-            () {},
-          ),
+          Obx(() => _authController.isCreatingAccount.value
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : authButton(
+                  getIt<ColorsFile>().primaryColor,
+                  Text(
+                    "Next",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: colorsFile.whiteColor, fontSize: 16.sp),
+                  ),
+                  () async {
+                    await _authController.signup();
+                  },
+                )),
         ],
       ).marginSymmetric(vertical: 16.h, horizontal: 16.w)),
     );
