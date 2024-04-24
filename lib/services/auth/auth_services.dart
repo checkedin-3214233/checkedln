@@ -50,7 +50,7 @@ class AuthServices {
       String gender,
       List<String> images,
       String bio) async {
-    Map<String, String> data = {
+    Map<String, dynamic> data = {
       "name": name,
       "userName": userName,
       "phone": number,
@@ -59,7 +59,7 @@ class AuthServices {
           getIt<CacheManager>().getNotificationSubscriptionId(),
       "dateOfBirth": dateOfBirth.toUtc().toString(),
       "gender": gender,
-      "userImages": images.toString(),
+      "userImages": images,
       "bio": bio
     };
 

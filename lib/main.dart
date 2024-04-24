@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'data/injection/dependency_injection.dart';
 import 'res/colors/colors.dart';
@@ -32,6 +33,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Checkedln',
         theme: ThemeData(
+          textTheme: GoogleFonts.nunitoTextTheme(),
+          primaryTextTheme: GoogleFonts.nunitoTextTheme(),
           colorScheme:
               ColorScheme.fromSeed(seedColor: getIt<ColorsFile>().primaryColor),
           useMaterial3: true,

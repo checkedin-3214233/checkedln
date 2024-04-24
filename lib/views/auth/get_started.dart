@@ -48,8 +48,9 @@ class _GetStartedState extends State<GetStarted> {
                     XFile? image = await ImagePicker()
                         .pickImage(source: ImageSource.gallery);
                     if (image != null) {
-                      _authController.profileImageUrl.value = image.path;
-                      _authController.userImages[0] = image.path;
+                      var imagePath = await _authController.uploadImage(File(image.path));
+                      _authController.profileImageUrl.value = imagePath;
+                      _authController.userImages[0] = imagePath;
                     }
                   },
                   child: Obx(
@@ -57,15 +58,14 @@ class _GetStartedState extends State<GetStarted> {
                         ? Image.asset(
                             "assets/images/add_profile_pic.webp",
                           ).marginOnly(bottom: 8.h)
-                        : Container(
+                        : _authController.isImageUploading.value? CircularProgressIndicator(): Container(
                             height: 80.h,
                             width: 80.w,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(50.w.h),
                                 image: DecorationImage(
                                     fit: BoxFit.cover,
-                                    image: FileImage(File(_authController
-                                        .profileImageUrl.value)))),
+                                    image: NetworkImage(_authController.profileImageUrl.value))),
                           ).marginOnly(bottom: 8.h),
                   ),
                 ),
@@ -90,6 +90,7 @@ class _GetStartedState extends State<GetStarted> {
                 userName(_authController.gender, TextInputType.text,
                     "Select Gender"),
                 userName(_authController.bio, TextInputType.text, "Bio"),
+              Obx(() => _authController.isCreatingAccount.value?Center(child: CircularProgressIndicator(),):
                 authButton(
                   getIt<ColorsFile>().primaryColor,
                   Text(
@@ -98,12 +99,13 @@ class _GetStartedState extends State<GetStarted> {
                     style: TextStyle(
                         color: colorsFile.whiteColor, fontSize: 16.sp),
                   ),
-                  () {
-                    if (_authController.validateGetStarted()) {
+                  ()async {
+                    bool check =  _authController.validateGetStarted();
+                    if (check) {
                       Get.to(() => MakeYourProfilePop());
                     }
                   },
-                ),
+                )),
                 textTwoTittle(
                     "Already have an account? ",
                     Text(

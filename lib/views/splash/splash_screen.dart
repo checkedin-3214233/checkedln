@@ -1,3 +1,4 @@
+import 'package:checkedln/controller/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -12,15 +13,10 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  navigate() {
-    Future.delayed(Duration(seconds: 2), () {
-      Get.offAll(AuthenticationScreen());
-    });
-  }
+SplashController _splashController = Get.put(SplashController());
 
   @override
   void initState() {
-    navigate();
     super.initState();
   }
 

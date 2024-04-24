@@ -54,7 +54,8 @@ class _LoginState extends State<Login> {
                       () async {
                         await authController.checkUser(true);
                       },
-                    )),
+                    )
+              ),
               textTwoTittle(
                   "Don’t have an account? ",
                   Text(

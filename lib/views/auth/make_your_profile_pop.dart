@@ -60,25 +60,31 @@ class _MakeYourProfilePopState extends State<MakeYourProfilePop> {
                               XFile? image = await ImagePicker()
                                   .pickImage(source: ImageSource.gallery);
                               if (image != null) {
-                                _authController.userImages[index] = image.path;
+                                _authController.userImages[index] = "loading";
+                                var imagePath = await _authController
+                                    .uploadImage(File(image.path));
+
+                                _authController.userImages[index] = imagePath;
                               }
                             }
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12.0),
-                            child: _authController.userImages[index].isNotEmpty
-                                ? Image.file(
-                                    File(_authController.userImages[index]),
+                            child: _authController.userImages[index] == "loading"
+                                ? Center(child: CircularProgressIndicator()): _authController.userImages[index].isNotEmpty
+                                ? Image.network(
+                                    _authController.userImages[index],
                                     fit: BoxFit.cover,
                                     width: 114.w,
                                     height: 111.h,
                                   )
-                                : Image.asset(
-                                    "assets/images/add_circle.webp",
-                                    fit: BoxFit.cover,
-                                    width: 32.w,
-                                    height: 32.h,
-                                  ),
+
+                                    : Image.asset(
+                                        "assets/images/add_circle.webp",
+                                        fit: BoxFit.cover,
+                                        width: 32.w,
+                                        height: 32.h,
+                                      ),
                           ),
                         ),
                       ),

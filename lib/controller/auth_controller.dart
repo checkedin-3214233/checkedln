@@ -1,10 +1,14 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:checkedln/data/local/cache_manager.dart';
 import 'package:checkedln/services/auth/auth_services.dart';
+import 'package:checkedln/services/upload_image.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../data/injection/dependency_injection.dart';
 import '../services/firebase_auth_service.dart';
 import '../views/auth/get_started.dart';
 import '../views/home/home.dart';
@@ -20,8 +24,10 @@ class AuthController extends GetxController {
   TextEditingController dateOfBirth = TextEditingController();
   TextEditingController gender = TextEditingController(text: "Your Gender");
   TextEditingController bio = TextEditingController();
+  UploadImage _uploadImage = UploadImage();
   var profileImageUrl = "".obs;
   var userImages = <String>["", "", "", "", "", ""].obs;
+  var isImageUploading = false.obs;
 
   final AuthServices _authServices = AuthServices();
   var verificationId = "".obs;
@@ -30,6 +36,7 @@ class AuthController extends GetxController {
   var isCreatingAccount = false.obs;
   var isOtpVerification = false.obs;
   var isLoginScreen = true.obs;
+  CacheManager cacheManager =getIt<CacheManager>();
   validatePhoneNumber() async {
     isSendingOtp.value = true;
     if (phoneNumberController.text.length == 10 &&
@@ -45,6 +52,20 @@ class AuthController extends GetxController {
     }
     isSendingOtp.value = false;
   }
+ Future<String> uploadImage(File file)async{
+   isImageUploading.value = true;
+    try{
+      String path  =await _uploadImage.uploadImage(file);
+      isImageUploading.value = false;
+      return path ;
+    }catch (e){
+      isImageUploading.value = false;
+
+      return "";
+    }
+
+
+ }
 
   verifyOtp(String otp) async {
     isOtpVerification.value = true;
@@ -53,7 +74,7 @@ class AuthController extends GetxController {
     if (isVerified) {
       Get.rawSnackbar(message: "OTP verification Successfull");
       if (isLoginScreen.value) {
-        login();
+       await login();
       } else {
         Get.to(() => GetStarted());
       }
@@ -97,8 +118,11 @@ class AuthController extends GetxController {
       dio.Response response = await _authServices.loginUser(
           "${countryCodeController.text}${phoneNumberController.text}");
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.rawSnackbar(message: response.data['message']);
-        Get.offAll(() => Home());
+       await cacheManager.setLoggedIn();
+        await cacheManager.setToken(response.data["user"]["accessToken"],response.data["user"]["refreshToken"]);
+       Get.rawSnackbar(message: response.data['message']);
+
+        Get.offAll(() => const Home());
       } else {
         Get.rawSnackbar(message: "Some error occurred at our end");
       }
@@ -122,6 +146,8 @@ class AuthController extends GetxController {
           bio.text);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.rawSnackbar(message: response.data['message']);
+        await cacheManager.setLoggedIn();
+        await cacheManager.setToken(response.data["user"]["accessToken"],response.data["user"]["refreshToken"]);
         Get.offAll(() => Home());
       } else {
         Get.rawSnackbar(message: response.data['message']);
@@ -133,6 +159,7 @@ class AuthController extends GetxController {
   }
 
   bool validateGetStarted() {
+
     if (firstName.text.isEmpty) {
       Get.rawSnackbar(message: "First Name is required");
       return false;
@@ -157,6 +184,7 @@ class AuthController extends GetxController {
       Get.rawSnackbar(message: "Profile Image is required");
       return false;
     }
+
     return true;
   }
 }

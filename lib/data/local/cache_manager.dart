@@ -13,6 +13,7 @@ class CacheManager {
   final String _notificationSubscriptionId = "notificationSubscriptionId";
   Future<void> init() async {
     _instance = await SharedPreferences.getInstance();
+
   }
 
   Future<void> setUserId(String token) async {
@@ -61,7 +62,7 @@ class CacheManager {
   bool? getLoggedIn() {
     bool login = _instance!.getBool(_loggedInString) ?? false;
 
-    return _instance!.getBool(_loggedInString) ?? false;
+    return login;
   }
 
   String getRefreshToken() {

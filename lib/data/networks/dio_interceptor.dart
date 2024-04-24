@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:checkedln/data/local/cache_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart' as g;
 
+import '../../views/auth/authentication_screen.dart';
 import '../errors/error_handling.dart';
 import '../injection/dependency_injection.dart';
 
@@ -66,6 +68,9 @@ class DioInterceptor extends Interceptor {
           return handler.resolve(response);
         } else {
           ///
+          await cacheManager.setLoggedIn(false);
+          g.Get.offAll(() => AuthenticationScreen());
+
         }
       } on DioException catch (e) {
         // If the request fails again, pass the error to the next interceptor in the chain.

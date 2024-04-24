@@ -47,7 +47,7 @@ class _OtpVerificationState extends State<OtpVerification> {
             children: [
               authHeading("Verify OTP"),
               authSubHeading(
-                  "Enter the 6-digit code sent to your registered phone number +91********10"),
+                  "Enter the 6-digit code sent to your registered phone number +91********${authController.phoneNumberController.text[authController.phoneNumberController.length-2]}${authController.phoneNumberController.text[authController.phoneNumberController.length-1]}"),
               Pinput(
                 length: 6,
                 defaultPinTheme: defaultPinTheme,
