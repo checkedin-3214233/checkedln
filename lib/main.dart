@@ -18,7 +18,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  getIt<CacheManager>().init();
+  await getIt<CacheManager>().init();
   runApp(const MyApp());
 }
 

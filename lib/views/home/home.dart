@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../controller/chat_controller.dart';
 import '../../controller/user_controller.dart';
+import '../../data/injection/dependency_injection.dart';
+import '../../services/socket_services.dart';
 import 'home_helper.dart';
 import 'home_screen.dart';
 
@@ -18,18 +21,19 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   HomeController _homeController = Get.put(HomeController());
   UserController _userController = Get.put(UserController());
+  ChatController _chatController = Get.put(ChatController());
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
-  _userController.getUser();
+    _userController.getUser();
+    _chatController.getChats();
 
-  super.initState();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       bottomNavigationBar: Container(
         height: 66.h,
