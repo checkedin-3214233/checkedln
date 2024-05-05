@@ -31,7 +31,17 @@ class _ChatScreenState extends State<ChatScreen> {
         return;
       },
       child: Scaffold(
-        appBar: mainAppBar("My Chats"),
+        appBar: mainAppBar(
+            "My Chats",
+            [
+              Image.asset(
+                "assets/images/search.png",
+                height: 40.h,
+                width: 40.w,
+              ).marginOnly(right: 10.w),
+            ],
+            SizedBox.shrink(),
+            false),
         body: SafeArea(
             child: Obx(() => _chatController.isChatLoading.value
                 ? const Center(

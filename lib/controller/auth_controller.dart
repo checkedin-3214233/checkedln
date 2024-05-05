@@ -25,6 +25,7 @@ class AuthController extends GetxController {
   TextEditingController gender = TextEditingController(text: "Your Gender");
   TextEditingController bio = TextEditingController();
   UploadImage _uploadImage = UploadImage();
+  var selectedGender;
   var profileImageUrl = "".obs;
   var userImages = <String>["", "", "", "", "", ""].obs;
   var isImageUploading = false.obs;
@@ -134,6 +135,14 @@ class AuthController extends GetxController {
 
   signup() async {
     isCreatingAccount.value = true;
+    List<String> images =[];
+    for(int i=0;i<userImages.length;i++){
+      if(userImages[i].isNotEmpty){
+        images.add(userImages[i]);
+
+      }
+    }
+    print(images);
     log("${countryCodeController.text}${phoneNumberController.text}");
     try {
       dio.Response response = await _authServices.signup(
@@ -143,7 +152,7 @@ class AuthController extends GetxController {
           profileImageUrl.value,
           DateTime.parse(dateOfBirth.text),
           gender.text,
-          userImages.toList(),
+          images,
           bio.text);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.rawSnackbar(message: response.data['message']);
@@ -173,7 +182,19 @@ class AuthController extends GetxController {
     }
     if (userName.text.isEmpty) {
       Get.rawSnackbar(message: "User Name is required");
+
       return false;
+    }
+  if (userName.text.length < 6) {
+    Get.rawSnackbar(message: 'Username must be at least 6 characters');
+
+    return false;
+
+    }  if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(userName.text)) {
+    Get.rawSnackbar(message:  'Username can only contain letters, numbers, and underscores');
+
+    return false;
+
     }
     if (dateOfBirth.text.isEmpty) {
       Get.rawSnackbar(message: "Date of Birth is required");
@@ -181,10 +202,6 @@ class AuthController extends GetxController {
     }
     if (gender.text == "Your Gender") {
       Get.rawSnackbar(message: "Gender is required");
-      return false;
-    }
-    if (profileImageUrl.isEmpty) {
-      Get.rawSnackbar(message: "Profile Image is required");
       return false;
     }
 

@@ -68,6 +68,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               color: Colors.black,
                             ),
                           ),
+                          borderColor: Colors.white,
                         ),
                       ),
                     )),
@@ -85,16 +86,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 height: 15,
               ),
               userName(
-                  _userController.firstName, TextInputType.text, "First Name"),
+                  _userController.firstName, TextInputType.text, "First Name",true),
               userName(
-                  _userController.lastName, TextInputType.text, "Last Name"),
+                  _userController.lastName, TextInputType.text, "Last Name",true),
               userName(
-                  _userController.userName, TextInputType.text, "User Name"),
+                  _userController.userName, TextInputType.text, "User Name",true),
               userName(_userController.dateOfBirth, TextInputType.text,
-                  "Date of Birth*"),
+                  "Date of Birth*",false),
               userName(
-                  _userController.gender, TextInputType.text, "Select Gender"),
-              userName(_userController.bio, TextInputType.text, "Bio"),
+                  _userController.gender, TextInputType.text, "Select Gender",false),
+              userName(_userController.bio, TextInputType.text, "Bio",false),
               Obx(() => _userController.isLoading.value
                   ? Center(
                       child: CircularProgressIndicator(),

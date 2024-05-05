@@ -23,7 +23,11 @@ class DioNetwork {
     String path,
   ) async {
     //_dio.interceptors.add(LogInterceptor(responseBody: false,requestBody: false));
-    _dio.interceptors.add(DioInterceptor());
+    bool login = getIt<CacheManager>().getLoggedIn() == true ?? false;
+
+    if (login) {
+      _dio.interceptors.add(DioInterceptor());
+    }
     try {
       Response response = await _dio.get(path);
 

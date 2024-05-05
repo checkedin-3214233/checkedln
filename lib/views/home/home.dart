@@ -1,10 +1,12 @@
 import 'package:checkedln/controller/home_controller.dart';
+import 'package:checkedln/controller/post_controller.dart';
 import 'package:checkedln/views/profiles/my_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../controller/chat_controller.dart';
+import '../../controller/check_in_controller.dart';
 import '../../controller/user_controller.dart';
 import '../../data/injection/dependency_injection.dart';
 import '../../services/socket_services.dart';
@@ -19,15 +21,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  HomeController _homeController = Get.put(HomeController());
-  UserController _userController = Get.put(UserController());
-  ChatController _chatController = Get.put(ChatController());
+  final HomeController _homeController = Get.put(HomeController());
+  final UserController _userController = Get.put(UserController());
+  final ChatController _chatController = Get.put(ChatController());
+  final PostController _postController = Get.put(PostController());
+  final CheckInController _checkInController = Get.put(CheckInController());
 
   @override
   void initState() {
     // TODO: implement initState
     _userController.getUser();
     _chatController.getChats();
+    _postController.getPost();
+    _checkInController.getPastEvent();
 
     super.initState();
   }

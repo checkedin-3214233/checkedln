@@ -4,12 +4,15 @@ class ProfileAvatar extends StatelessWidget {
   final String imageUrl;
   final double size;
   final Widget child;
+  final Color borderColor;
+
 
   const ProfileAvatar(
       {Key? key,
       required this.imageUrl,
       required this.size,
-      required this.child})
+      required this.child,
+      required this.borderColor})
       : super(key: key);
 
   @override
@@ -21,7 +24,7 @@ class ProfileAvatar extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 3.0),
+            border: Border.all(color: borderColor, width: 3.0),
             image: DecorationImage(
               fit: BoxFit.cover,
               image: NetworkImage(imageUrl),

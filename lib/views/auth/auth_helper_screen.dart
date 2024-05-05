@@ -81,6 +81,7 @@ Widget authSubHeading(String heading) {
 Widget phoneNumberField(bool isNumber) {
   AuthController authController = Get.find<AuthController>();
   return TextField(
+    maxLength: isNumber?10:3,
     keyboardType: TextInputType.phone,
     controller: isNumber
         ? authController.phoneNumberController
@@ -108,7 +109,7 @@ Widget phoneNumberField(bool isNumber) {
 }
 
 Widget userName(
-    TextEditingController controller, TextInputType type, String hintText) {
+    TextEditingController controller, TextInputType type, String hintText,bool isEditable) {
   const gender = ["male", "female", "other"];
   return TextField(
     textInputAction: TextInputAction.next,
@@ -157,7 +158,7 @@ Widget userName(
         );
       }
     },
-    readOnly: hintText == "Date of Birth*" || hintText == "Select Gender",
+    readOnly: isEditable|| hintText == "Date of Birth*" || hintText == "Select Gender",
     controller: controller,
     keyboardType: type,
     decoration: InputDecoration(

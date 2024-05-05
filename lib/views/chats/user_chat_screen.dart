@@ -112,6 +112,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
                                                   .userModel!.profileImageUrl!,
                                               size: 32,
                                               child: SizedBox.shrink(),
+                                              borderColor: Colors.white,
                                             ).marginOnly(right: 2.w),
                                             Text(
                                               widget.userModel!.userName!,

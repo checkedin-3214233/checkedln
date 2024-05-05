@@ -44,7 +44,7 @@ Widget chatUserTile(int i, List<dynamic> onlineUsers) {
                                       color: Color(0xff0FE16D),
                                     ),
                                   )
-                                : SizedBox.shrink())
+                                : SizedBox.shrink(),borderColor: Colors.white,)
                         .marginOnly(right: 10.w),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -146,6 +146,7 @@ AppBar userChatAppBar(UserModel userModel) {
                 }
                 return SizedBox.shrink();
               }),
+          borderColor: Colors.white,
         ).marginOnly(right: 10.w),
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

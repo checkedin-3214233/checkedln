@@ -7,8 +7,10 @@ import 'package:get/get.dart';
 
 import '../../controller/home_controller.dart';
 import '../../controller/user_controller.dart';
+import '../checkin/past_checkin_sceen.dart';
 import '../widget_helper.dart';
 import 'edit_profile_screen.dart';
+import 'my_post_screen.dart';
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({super.key});
@@ -45,7 +47,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     _userController.userModel.value!.userImages!.isEmpty
                         ? Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 32.h),
+                                horizontal: 10.w, vertical: 15.h),
                             child: Column(
                               children: [
                                 Row(
@@ -72,7 +74,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     _userController.userModel.value!.userImages!.isNotEmpty
                         ? Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 16.w, vertical: 32.h),
+                                horizontal: 10.w, vertical: 15.h),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.end,
@@ -95,14 +97,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       padding: EdgeInsets.all(6.0),
                                       width: 30.w,
                                       height: 30.h,
+                                      alignment: Alignment.center,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: Color(0xffEBE9EC),
                                       ),
-                                      child: Icon(
-                                        Icons.edit,
-                                        color: Colors.black,
-                                      ),
+                                      child:
+                                          Image.asset("assets/images/edit.png"),
                                     ),
                                     SizedBox(
                                       height: 10,
@@ -113,6 +114,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       position: _userController
                                           .currentImageCount.value,
                                       decorator: DotsDecorator(
+                                        size: Size(6.w, 6.h),
                                         color: Colors.white, // Inactive color
                                         activeColor: Color(0xffAD2EE5),
                                       ),
@@ -146,8 +148,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               children: [
                                 Container(
                                   child: ProfileAvatar(
-                                    imageUrl: _userController
-                                        .userModel.value!.profileImageUrl!,
+                                    imageUrl: _userController.userModel.value!
+                                            .profileImageUrl!.isEmpty
+                                        ? "https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg"
+                                        : _userController
+                                            .userModel.value!.profileImageUrl!,
                                     size: 107,
                                     child: Container(
                                       padding: EdgeInsets.all(6.0),
@@ -155,11 +160,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                         shape: BoxShape.circle,
                                         color: Color(0xffEBE9EC),
                                       ),
-                                      child: Icon(
-                                        Icons.edit,
-                                        color: Colors.black,
-                                      ),
+                                      child:
+                                          Image.asset("assets/images/edit.png"),
                                     ),
+                                    borderColor: Colors.white,
                                   ),
                                 ),
                                 textColumn(
@@ -195,24 +199,30 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               textAlign: TextAlign.start,
                             ),
                           ),
-                          Text(
-                            _userController.userModel.value!.bio!,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14.sp,
-                                color: Color(0xff28222A)),
+                          Transform.translate(
+                            offset: Offset(0.0, -5.0), //
+                            child: Text(
+                              _userController.userModel.value!.bio!,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14.sp,
+                                  color: Color(0xff28222A)),
+                            ),
                           ),
-                          button(
-                              Color(0xffEBE9EC),
-                              Text(
-                                "Edit Profile",
-                                style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xff4A404F)),
-                              ), () {
-                            Get.to(() => EditProfileScreen());
-                          }),
+                          Transform.translate(
+                            offset: Offset(0.0, -10.0), //
+                            child: button(
+                                Color(0xffEBE9EC),
+                                Text(
+                                  "Edit Profile",
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xff4A404F)),
+                                ), () {
+                              Get.to(() => EditProfileScreen());
+                            }),
+                          ),
                           TabBar(
                               padding: EdgeInsets.symmetric(vertical: 15),
                               indicatorSize: TabBarIndicatorSize.tab,
@@ -221,7 +231,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               tabs: [
                                 tabContainer("Post"),
                                 tabContainer("My Checkins")
-                              ])
+                              ]),
+                          SizedBox(
+                              height: 500.h,
+                              child: TabBarView(
+                                children: [
+                                  MyPostScreen(),
+                                  PastCheckInScreen(),
+                                ],
+                              ))
                         ],
                       ),
                     )

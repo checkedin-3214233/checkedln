@@ -9,6 +9,7 @@ class UserServices {
   DioNetwork dioNetwork = DioNetwork();
   final String _user = dotenv.env['USER']!;
   final String _update = dotenv.env['UPDATE_USER']!;
+  final String _search = dotenv.env['SEARCH_USER']!;
 
   Future<dynamic> getUser() async {
     log(_user + _update);
@@ -45,6 +46,18 @@ class UserServices {
       Response response =
           await dioNetwork.postData(_user + _update, data: data);
 
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  searchUser(String name) async {
+    var data = {"userName": name};
+    try {
+      Response response =
+          await dioNetwork.postData(_user + _search, data: data);
       return response;
     } catch (e) {
       log(e.toString());

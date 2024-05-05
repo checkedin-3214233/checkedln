@@ -75,21 +75,61 @@ class _GetStartedState extends State<GetStarted> {
                       Expanded(
                           flex: 5,
                           child: userName(_authController.firstName,
-                                  TextInputType.name, "First Name*")
+                                  TextInputType.name, "First Name*",false)
                               .marginOnly(right: 3.w)),
                       Expanded(
                           flex: 5,
                           child: userName(_authController.lastName,
-                                  TextInputType.name, "Last Name*")
+                                  TextInputType.name, "Last Name*",false)
                               .marginOnly(left: 3.w))
                     ]),
                 userName(
-                    _authController.userName, TextInputType.name, "User Name*"),
+                    _authController.userName, TextInputType.name, "User Name*",false),
                 userName(_authController.dateOfBirth, TextInputType.text,
-                    "Date of Birth*"),
-                userName(_authController.gender, TextInputType.text,
-                    "Select Gender"),
-                userName(_authController.bio, TextInputType.text, "Bio"),
+                    "Date of Birth*",false),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF5F4F6),
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      hint: Text('Your Gender',
+                          style: TextStyle(
+                              color: Color(0XFFA294A8),
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w400)),
+                      value: _authController.selectedGender,
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      iconSize: 36.0,
+                      elevation: 16,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _authController.selectedGender= newValue!;
+                          _authController.gender.text=newValue.toLowerCase();
+                        });
+                      },
+                      items: <String>['Male', 'Female',"Other"].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Row(
+                            children: [
+                              Icon(
+                                value == 'Male' ? Icons.male :value == 'Female' ?  Icons.female:Icons.error,
+                                color: Colors.grey[600],
+                              ),
+                              SizedBox(width: 8.0),
+                              Text(value),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                userName(_authController.bio, TextInputType.text, "Bio",false),
               Obx(() => _authController.isCreatingAccount.value?Center(child: CircularProgressIndicator(),):
                 authButton(
                   getIt<ColorsFile>().primaryColor,
