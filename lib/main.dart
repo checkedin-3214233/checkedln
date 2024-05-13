@@ -1,4 +1,5 @@
 import 'package:checkedln/data/local/cache_manager.dart';
+import 'package:checkedln/services/notiication/one_signal_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,11 +14,12 @@ import 'views/splash/splash_screen.dart';
 void main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
-  await ScreenUtil.ensureScreenSize();
-  setup();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await ScreenUtil.ensureScreenSize();
+  setup();
+
   await getIt<CacheManager>().init();
   runApp(const MyApp());
 }
@@ -28,6 +30,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    getIt<OneSignalServices>().context = context;
+
     return ScreenUtilInit(builder: (_, context) {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,

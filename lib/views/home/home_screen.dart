@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../controller/checkin/check_in_controller.dart';
 import 'home_helper.dart';
 import 'story_view.dart';
 
@@ -15,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  CheckInController _checkInController= Get.find<CheckInController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

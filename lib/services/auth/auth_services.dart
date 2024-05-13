@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:checkedln/services/notiication/one_signal_services.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -28,6 +29,7 @@ class AuthServices {
   }
 
   Future<dynamic> loginUser(String number) async {
+    await getIt<OneSignalServices>().setNotificationToken();
     Map<String, String> data = {
       "phone": number,
       "notificationToken": getIt<CacheManager>().getNotificationSubscriptionId()
@@ -50,6 +52,8 @@ class AuthServices {
       String gender,
       List<String> images,
       String bio) async {
+    await getIt<OneSignalServices>().setNotificationToken();
+
     Map<String, dynamic> data = {
       "name": name,
       "userName": userName,

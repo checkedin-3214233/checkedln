@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../notification/notification_screen.dart';
 import '../profiles/profile_avatar.dart';
 import '../search/search_screen.dart';
 
@@ -49,9 +50,7 @@ Widget bottomItem(int index) {
 
 AppBar appBar() {
   return AppBar(
-
     backgroundColor: Colors.white,
-
     title: Image.asset("assets/images/logo.png"),
     actions: [
       Padding(
@@ -63,7 +62,11 @@ AppBar appBar() {
               child: Image.asset("assets/images/search.png"))),
       Padding(
           padding: EdgeInsets.only(right: 15.w),
-          child: Image.asset("assets/images/notifiction.png"))
+          child: InkWell(
+              onTap: () {
+                Get.to(() => NotificationScreen());
+              },
+              child: Image.asset("assets/images/notifiction.png")))
     ],
   );
 }
@@ -80,7 +83,6 @@ Widget storyView() {
                   children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-
                       children: [
                         Container(
                           margin: EdgeInsets.only(left: 10.w),

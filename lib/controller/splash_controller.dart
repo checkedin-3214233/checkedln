@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import '../services/notiication/one_signal_services.dart';
 import 'package:get/get.dart';
 
 import '../data/injection/dependency_injection.dart';
@@ -17,6 +17,7 @@ class SplashController extends GetxController {
     if (loggedIn!) {
       Get.offAll(() => const Home());
     } else {
+
       Get.offAll(const AuthenticationScreen());
     }
   }

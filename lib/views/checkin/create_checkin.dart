@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'package:checkedln/controller/check_in_controller.dart';
+import 'package:checkedln/controller/checkin/check_in_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../controller/checkin/create_checkin_controller.dart';
 import '../widget_helper.dart';
 import 'checkin_widget_helper.dart';
 
@@ -17,7 +18,7 @@ class CreateCheckIn extends StatefulWidget {
 }
 
 class _CreateCheckInState extends State<CreateCheckIn> {
-  CheckInController _checkInController = Get.find<CheckInController>();
+  CreateCheckInController _checkInController = Get.put(CreateCheckInController());
   String? _selectedItem;
 
   @override
@@ -169,7 +170,10 @@ class _CreateCheckInState extends State<CreateCheckIn> {
                       TextInputType.name, "Event Name", false)
                   .marginSymmetric(vertical: 5.h),
               userName(_checkInController.location, TextInputType.name,
-                      "Event Venue", false)
+                      "Event Venue", true)
+                  .marginSymmetric(vertical: 5.h),
+              userName(_checkInController.priceController, TextInputType.number,
+                  "Price (optional)", false)
                   .marginSymmetric(vertical: 5.h),
               userName(_checkInController.aboutCheckIn, TextInputType.name,
                       "Write about Check-in", false)

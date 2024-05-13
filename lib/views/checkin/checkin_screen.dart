@@ -1,4 +1,4 @@
-import 'package:checkedln/controller/check_in_controller.dart';
+import 'package:checkedln/controller/checkin/check_in_controller.dart';
 import 'package:checkedln/views/checkin/create_checkin.dart';
 import 'package:checkedln/views/checkin/past_checkin_sceen.dart';
 import 'package:checkedln/views/checkin/upcoming_checkin_screen.dart';

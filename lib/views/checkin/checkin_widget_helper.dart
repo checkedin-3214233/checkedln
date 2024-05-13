@@ -1,9 +1,10 @@
+import 'package:checkedln/views/checkin/select_location.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../controller/check_in_controller.dart';
+import '../../controller/checkin/check_in_controller.dart';
 import '../../data/injection/dependency_injection.dart';
 import '../../res/colors/colors.dart';
 import 'package:intl/intl.dart'; // Import the intl package for date formatting
@@ -457,6 +458,9 @@ Widget userName(TextEditingController controller, TextInputType type,
     maxLines: hintText == "Write about Check-in" ? 3 : null,
     textInputAction: TextInputAction.next,
     onTap: () async {
+      if(hintText=="Event Venue"){
+        Get.to(()=>SelectLocation(controller: controller,));
+      }
       if (hintText == "Start Date" || hintText == "End Date") {
         final DateTime? picked = await showDatePicker(
           context: Get.context!,
@@ -467,6 +471,7 @@ Widget userName(TextEditingController controller, TextInputType type,
         if (picked != null) {
           controller.text = picked.toString().substring(0, 10);
         }
+
       }
       if (hintText == "Start Time" || hintText == "End Time") {
         final TimeOfDay? picked = await showTimePicker(

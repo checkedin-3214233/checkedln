@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mapmyindia_gl/mapmyindia_gl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../exceptions/app_exceptions.dart';
@@ -13,7 +15,14 @@ class CacheManager {
   final String _notificationSubscriptionId = "notificationSubscriptionId";
   Future<void> init() async {
     _instance = await SharedPreferences.getInstance();
+    setMapMyIndia();
 
+  }
+  setMapMyIndia()async{
+   await MapmyIndiaAccountManager.setMapSDKKey(dotenv.env["MAP_MY_INDIA_ACCESS_TOKEN_KEY"]!);
+   await MapmyIndiaAccountManager.setRestAPIKey(dotenv.env["MAP_MY_INDIA_REST_API_KEY"]!);
+   await MapmyIndiaAccountManager.setAtlasClientId(dotenv.env["MAP_MY_INDIA_ATLAS_CLIENT_ID"]!);
+   await MapmyIndiaAccountManager.setAtlasClientSecret(dotenv.env["MAP_MY_INDIA_ATLAS_CLIENT_SECRET"]!);
   }
 
   Future<void> setUserId(String token) async {
@@ -55,8 +64,9 @@ class CacheManager {
   }
 
   String getNotificationSubscriptionId() {
-    String? id = _instance!.getString(_notificationSubscriptionId) ?? "";
-    return id;
+    String? id = _instance!.getString(_notificationSubscriptionId);
+    log("Notification Token $id");
+    return id!;
   }
 
   bool? getLoggedIn() {
