@@ -1,9 +1,12 @@
+import 'package:checkedln/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../controller/checkin/check_in_controller.dart';
+import '../res/colors/routes/route_constant.dart';
 import 'checkin/checkin_info.dart';
 
 Widget backButton(Icon icon, Function() onPressed) {
@@ -39,7 +42,7 @@ Widget button(Color color, Text text, Function() onPressed) {
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
       alignment: Alignment.center,
-      width: MediaQuery.of(Get.context!).size.width,
+      width: MediaQuery.of(ctx!).size.width,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(6.5.w.h),
@@ -67,7 +70,7 @@ AppBar mainAppBar(
     centerTitle: true,
     leading: InkWell(
       onTap: () {
-        Get.back();
+        ctx!.pop();
       },
       child: Image.asset(
         "assets/images/back_btn.webp",
@@ -85,7 +88,7 @@ Widget postButton(Widget child, Function() onPressed, Color color) {
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
       alignment: Alignment.center,
-      width: MediaQuery.of(Get.context!).size.width,
+      width: MediaQuery.of(ctx!).size.width,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(15.5.w.h),
@@ -112,8 +115,9 @@ Widget nearByCheckIn() {
               itemBuilder: (context, i) {
                 return InkWell(
                   onTap: () {
-                    Get.to(() => CheckInfoScreen(id:_checkInController
-                        .nearByEvents[i].id!));
+                    context.push(
+                      "${RoutesConstants.checkin}/${_checkInController.nearByEvents[i].id!}",
+                    );
                   },
                   child: Container(
                     width: 250.w,

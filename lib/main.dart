@@ -1,4 +1,5 @@
 import 'package:checkedln/data/local/cache_manager.dart';
+import 'package:checkedln/global_index.dart';
 import 'package:checkedln/services/notiication/one_signal_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,7 +10,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'firebase_options.dart';
 import 'data/injection/dependency_injection.dart';
 import 'res/colors/colors.dart';
-import 'views/splash/splash_screen.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -33,8 +33,9 @@ class MyApp extends StatelessWidget {
     getIt<OneSignalServices>().context = context;
 
     return ScreenUtilInit(builder: (_, context) {
-      return GetMaterialApp(
+      return GetMaterialApp.router(
         debugShowCheckedModeBanner: false,
+        key: navigatorKey,
         title: 'Checkedln',
         theme: ThemeData(
           textTheme: GoogleFonts.nunitoTextTheme(),
@@ -43,7 +44,9 @@ class MyApp extends StatelessWidget {
               ColorScheme.fromSeed(seedColor: getIt<ColorsFile>().primaryColor),
           useMaterial3: true,
         ),
-        home: const SplashScreen(),
+        routerDelegate: router.routerDelegate,
+        routeInformationParser: router.routeInformationParser,
+        routeInformationProvider: router.routeInformationProvider,
       );
     });
   }

@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../res/colors/colors.dart';
+import '../../../global_index.dart';
 
 Widget authButton(Color color, Text text, Function() onPressed) {
   return InkWell(
@@ -13,7 +14,7 @@ Widget authButton(Color color, Text text, Function() onPressed) {
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 20.w),
       alignment: Alignment.center,
-      width: MediaQuery.of(Get.context!).size.width,
+      width: MediaQuery.of(ctx!).size.width,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(11.5.w.h),
@@ -81,7 +82,7 @@ Widget authSubHeading(String heading) {
 Widget phoneNumberField(bool isNumber) {
   AuthController authController = Get.find<AuthController>();
   return TextField(
-    maxLength: isNumber?10:3,
+    maxLength: isNumber ? 10 : 3,
     keyboardType: TextInputType.phone,
     controller: isNumber
         ? authController.phoneNumberController
@@ -108,8 +109,8 @@ Widget phoneNumberField(bool isNumber) {
   ).marginOnly(right: 8.w);
 }
 
-Widget userName(
-    TextEditingController controller, TextInputType type, String hintText,bool isEditable) {
+Widget userName(TextEditingController controller, TextInputType type,
+    String hintText, bool isEditable) {
   const gender = ["male", "female", "other"];
   return TextField(
     textInputAction: TextInputAction.next,
@@ -158,7 +159,9 @@ Widget userName(
         );
       }
     },
-    readOnly: isEditable|| hintText == "Date of Birth*" || hintText == "Select Gender",
+    readOnly: isEditable ||
+        hintText == "Date of Birth*" ||
+        hintText == "Select Gender",
     controller: controller,
     keyboardType: type,
     decoration: InputDecoration(

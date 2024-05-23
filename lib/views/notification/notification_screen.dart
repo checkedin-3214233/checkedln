@@ -72,6 +72,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       Get.to(
                         () => CheckInfoScreen(
                           id: data["event"]["_id"],
+                          isDeep: false,
                         ),
                       );
                     },

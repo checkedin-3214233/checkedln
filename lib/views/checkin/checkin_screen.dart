@@ -17,11 +17,15 @@ class CheckInScreen extends StatefulWidget {
 }
 
 class _CheckInScreenState extends State<CheckInScreen> {
-  CheckInController _checkInController = Get.find<CheckInController>();
+  final CheckInController _checkInController =
+      Get.isRegistered<CheckInController>()
+          ? Get.find<CheckInController>()
+          : Get.put(CheckInController());
   @override
   void initState() {
     // TODO: implement initState
     _checkInController.getUpcomingEvent();
+    _checkInController.getPastEvent();
     super.initState();
   }
 

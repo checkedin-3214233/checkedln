@@ -2,13 +2,16 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:checkedln/data/local/cache_manager.dart';
+import 'package:checkedln/global.dart';
 import 'package:checkedln/services/auth/auth_services.dart';
 import 'package:checkedln/services/upload_image.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/injection/dependency_injection.dart';
+import '../res/colors/routes/route_constant.dart';
 import '../services/firebase_auth_service.dart';
 import '../views/auth/get_started.dart';
 import '../views/home/home.dart';
@@ -124,7 +127,7 @@ class AuthController extends GetxController {
             response.data["user"]["refreshToken"]);
         Get.rawSnackbar(message: response.data['message']);
 
-        Get.offAll(() => const Home());
+        ctx!.pushReplacement(RoutesConstants.home);
       } else {
         Get.rawSnackbar(message: "Some error occurred at our end");
       }
@@ -135,11 +138,10 @@ class AuthController extends GetxController {
 
   signup() async {
     isCreatingAccount.value = true;
-    List<String> images =[];
-    for(int i=0;i<userImages.length;i++){
-      if(userImages[i].isNotEmpty){
+    List<String> images = [];
+    for (int i = 0; i < userImages.length; i++) {
+      if (userImages[i].isNotEmpty) {
         images.add(userImages[i]);
-
       }
     }
     print(images);
@@ -185,16 +187,17 @@ class AuthController extends GetxController {
 
       return false;
     }
-  if (userName.text.length < 6) {
-    Get.rawSnackbar(message: 'Username must be at least 6 characters');
+    if (userName.text.length < 6) {
+      Get.rawSnackbar(message: 'Username must be at least 6 characters');
 
-    return false;
+      return false;
+    }
+    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(userName.text)) {
+      Get.rawSnackbar(
+          message:
+              'Username can only contain letters, numbers, and underscores');
 
-    }  if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(userName.text)) {
-    Get.rawSnackbar(message:  'Username can only contain letters, numbers, and underscores');
-
-    return false;
-
+      return false;
     }
     if (dateOfBirth.text.isEmpty) {
       Get.rawSnackbar(message: "Date of Birth is required");

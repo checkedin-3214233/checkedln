@@ -6,9 +6,12 @@ import 'package:get/get.dart';
 
 import '../../controller/auth_controller.dart';
 import '../../data/injection/dependency_injection.dart';
+import '../../global.dart';
 import '../../res/colors/colors.dart';
+import '../../res/colors/routes/route_constant.dart';
 import 'auth_helper_screen.dart';
 import 'otp_verification.dart';
+import 'package:go_router/go_router.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -19,7 +22,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   ColorsFile colorsFile = getIt<ColorsFile>();
-  AuthController authController = Get.find<AuthController>();
+  AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +57,7 @@ class _LoginState extends State<Login> {
                       () async {
                         await authController.checkUser(true);
                       },
-                    )
-              ),
+                    )),
               textTwoTittle(
                   "Don’t have an account? ",
                   Text(
@@ -65,7 +67,7 @@ class _LoginState extends State<Login> {
                         color: getIt<ColorsFile>().textColor2,
                         fontWeight: FontWeight.w700),
                   ), () {
-                Get.to(() => SignUp());
+                context.go(RoutesConstants.createProfile);
               }).marginOnly(top: 16.h),
             ],
           ),

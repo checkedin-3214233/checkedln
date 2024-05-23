@@ -1,5 +1,9 @@
+import 'package:checkedln/global.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:checkedln/res/colors/routes/route_constant.dart';
 
 import '../controller/auth_controller.dart';
 import '../views/auth/otp_verification.dart';
@@ -17,7 +21,7 @@ class FirebaseAuthServices {
       codeSent: (String verificationId, int? resendToken) {
         Get.find<AuthController>().verificationId.value = verificationId;
         Get.find<AuthController>().isOtpSent.value = true;
-        Get.to(() => OtpVerification());
+        ctx?.pushReplacement(RoutesConstants.otp);
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
     );

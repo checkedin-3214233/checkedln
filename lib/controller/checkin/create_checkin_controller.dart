@@ -15,79 +15,77 @@ import '../../services/location/location_service.dart';
 import '../../services/upload_image.dart';
 import 'check_in_controller.dart';
 
-class CreateCheckInController extends GetxController
-{
-
+class CreateCheckInController extends GetxController {
   var address = <GeoCodeResult>[].obs;
-  var latitude=0.0.obs;
+  var latitude = 0.0.obs;
   var longitude = 0.0.obs;
   TextEditingController typeController = TextEditingController();
   TextEditingController checkInNameController = TextEditingController();
   TextEditingController location = TextEditingController();
   TextEditingController aboutCheckIn = TextEditingController();
-  var bannerImage="".obs;
+  var bannerImage = "".obs;
   CheckInServices _checkInServices = CheckInServices();
 
   TextEditingController startDateTime = TextEditingController();
-  TextEditingController endDateTime=TextEditingController();
-  TextEditingController startTime=TextEditingController();
-  TextEditingController endTime=TextEditingController();
+  TextEditingController endDateTime = TextEditingController();
+  TextEditingController startTime = TextEditingController();
+  TextEditingController endTime = TextEditingController();
   TextEditingController priceController = TextEditingController();
   UploadImage _uploadImage = UploadImage();
   var isImageUploading = false.obs;
   var isCreatingEvent = false.obs;
-  validate()async{
+  validate() async {
     isCreatingEvent.value = true;
 
-
-    if(typeController.text.isEmpty){
+    if (typeController.text.isEmpty) {
       Get.rawSnackbar(message: "Type is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(bannerImage.value.isEmpty){
+    if (bannerImage.value.isEmpty) {
       Get.rawSnackbar(message: "Banner Image is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(startDateTime.text.isEmpty){
+    if (startDateTime.text.isEmpty) {
       Get.rawSnackbar(message: "Start Date is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(endDateTime.text.isEmpty){
+    if (endDateTime.text.isEmpty) {
       Get.rawSnackbar(message: "End Date is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(startTime.text.isEmpty){
+    if (startTime.text.isEmpty) {
       Get.rawSnackbar(message: "Start Time  is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(endTime.text.isEmpty){
+    if (endTime.text.isEmpty) {
       Get.rawSnackbar(message: "End Time is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(checkInNameController.text.isEmpty){
+    if (checkInNameController.text.isEmpty) {
       Get.rawSnackbar(message: "Event Name  is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(location.text.isEmpty){
+    if (location.text.isEmpty) {
       Get.rawSnackbar(message: "Event Venue  is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(aboutCheckIn.text.isEmpty){
+    if (aboutCheckIn.text.isEmpty) {
       Get.rawSnackbar(message: "About Check In is required");
       isCreatingEvent.value = false;
       return false;
     }
-    if(latitude.value==0.0&&longitude.value==0.0){
-      Coordinates coordinates =  await getIt<LocationService>().getCoordinates(location.text);
-      if(coordinates.latitude==null&&coordinates.longitude==null){
+    if (latitude.value == 0.0 && longitude.value == 0.0) {
+      Coordinates coordinates =
+          await getIt<LocationService>().getCoordinates(location.text);
+      if (coordinates.latitude == null && coordinates.longitude == null) {
         Get.rawSnackbar(message: "Location Not Found");
         isCreatingEvent.value = false;
         return false;
@@ -98,6 +96,7 @@ class CreateCheckInController extends GetxController
     }
     return true;
   }
+
   Future<String> uploadImage(File file) async {
     isImageUploading.value = true;
     try {
@@ -111,28 +110,38 @@ class CreateCheckInController extends GetxController
     }
   }
 
-  createEvent()async{
-
-
-    if(await validate()){
+  createEvent() async {
+    if (await validate()) {
       isCreatingEvent.value = true;
 
-      dio.Response response = await _checkInServices.createEvent(typeController.text, bannerImage.value, checkInNameController.text, getDateTime(startDateTime.text,startTime.text), getDateTime(endDateTime.text,endTime.text), location.text,latitude.value,longitude.value,double.parse(!priceController.text.isEmpty?priceController.text:"0.0"), aboutCheckIn.text);
-      if(response.statusCode==200||response.statusCode==201){
+      dio.Response response = await _checkInServices.createEvent(
+          typeController.text,
+          bannerImage.value,
+          checkInNameController.text,
+          getDateTime(startDateTime.text, startTime.text),
+          getDateTime(endDateTime.text, endTime.text),
+          location.text,
+          latitude.value,
+          longitude.value,
+          double.parse(
+              !priceController.text.isEmpty ? priceController.text : "0.0"),
+          aboutCheckIn.text);
+      if (response.statusCode == 200 || response.statusCode == 201) {
         Get.rawSnackbar(message: "Event Created Succesfully");
         EventModel eventModel = EventModel.fromJson(response.data["event"]);
         Get.find<CheckInController>().upcomingEvents.add(eventModel);
         Get.find<CheckInController>().update();
 
         update();
-         getIt<LocationService>().getNearbyEvents();
+        getIt<LocationService>().getNearbyEvents();
       }
       isCreatingEvent.value = false;
 
       Navigator.pop(Get.context!);
     }
   }
-  getDateTime(String dateString,String timeString){
+
+  getDateTime(String dateString, String timeString) {
     DateTime date = DateTime.parse(dateString);
 
     // Parse time string into TimeOfDay
@@ -152,18 +161,19 @@ class CreateCheckInController extends GetxController
     return combinedDateTime;
   }
 
-  searchAddress()async{
+  searchAddress() async {
     try {
-      GeocodeResponse? response = await MapmyIndiaGeoCoding(address: location.text,itemCount: 20)
-          .callGeocoding();
-      if (response != null && response.results != null &&
+      GeocodeResponse? response =
+          await MapmyIndiaGeoCoding(address: location.text, itemCount: 20)
+              .callGeocoding();
+      if (response != null &&
+          response.results != null &&
           response.results!.length > 0) {
         address.clear();
         address.value = response.results!;
         update();
-
       }
-    } catch(e) {
+    } catch (e) {
       if (e is PlatformException) {
         log(e.message.toString());
       }

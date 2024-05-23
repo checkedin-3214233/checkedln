@@ -2,8 +2,9 @@ import 'package:checkedln/controller/splash_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
-import '../auth/authentication_screen.dart';
+import '../../res/colors/routes/route_constant.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,7 +14,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-SplashController _splashController = Get.put(SplashController());
+  // SplashController _splashController = Get.put(SplashController());
 
   @override
   void initState() {

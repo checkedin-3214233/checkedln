@@ -1,8 +1,10 @@
 import 'package:checkedln/controller/chat_controller.dart';
+import 'package:checkedln/global_index.dart';
 import 'package:checkedln/views/chats/chat_widget_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controller/home_controller.dart';
 import '../../data/injection/dependency_injection.dart';
@@ -28,6 +30,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return PopScope(
       onPopInvoked: (s) {
         Get.find<HomeController>().currentBottomIndex.value = 0;
+        ctx!.pop();
         return;
       },
       child: Scaffold(

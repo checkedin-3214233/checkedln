@@ -1,4 +1,6 @@
 import 'package:checkedln/controller/home_controller.dart';
+import 'package:checkedln/global.dart';
+import 'package:checkedln/res/colors/routes/route_constant.dart';
 import 'package:checkedln/views/chats/chat_screen.dart';
 import 'package:checkedln/views/checkin/checkin_screen.dart';
 import 'package:checkedln/views/home/story_view.dart';
@@ -6,6 +8,8 @@ import 'package:checkedln/views/post/post_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../notification/notification_screen.dart';
 import '../profiles/profile_avatar.dart';
@@ -20,16 +24,17 @@ Widget bottomItem(int index) {
           IconButton(
             enableFeedback: false,
             onPressed: () {
-              _homeController.currentBottomIndex.value = index;
               if (index == 1) {
-                Get.to(() => ChatScreen());
+                ctx!.push(RoutesConstants.chat);
               } else if (index == 2) {
-                Get.to(() => PostScreen());
+                ctx!.push(RoutesConstants.post);
               } else if (index == 3) {
-                Get.to(() => CheckInScreen());
+                ctx!.push(RoutesConstants.allCheckin);
+              } else {
+                _homeController.currentBottomIndex.value = index;
               }
             },
-            icon: Image.asset(
+            icon: SvgPicture.asset(
               _homeController.currentBottomIndex.value == index
                   ? _homeController.bottomNavigationJson["items"]![index]
                           ["selectedIcon"]
@@ -37,12 +42,12 @@ Widget bottomItem(int index) {
                   : _homeController.bottomNavigationJson["items"]![index]
                           ["icon"]
                       .toString(),
-              width: 50,
-              height: 50,
+              width: index == 2 ? 50.w : 21.w,
+              height: index == 2 ? 50.h : 21.h,
             ),
           ),
           _homeController.currentBottomIndex.value == index
-              ? Image.asset("assets/images/selectedBottom.png")
+              ? SvgPicture.asset("assets/images/selectedBottom.svg")
               : SizedBox.shrink()
         ],
       ));
@@ -51,7 +56,10 @@ Widget bottomItem(int index) {
 AppBar appBar() {
   return AppBar(
     backgroundColor: Colors.white,
-    title: Image.asset("assets/images/logo.png"),
+    title: Image.asset(
+      "assets/images/logo.jpg",
+      width: 100.w,
+    ),
     actions: [
       Padding(
           padding: EdgeInsets.only(right: 15.w),
@@ -59,14 +67,14 @@ AppBar appBar() {
               onTap: () {
                 Get.to(() => SearchScreen());
               },
-              child: Image.asset("assets/images/search.png"))),
+              child: SvgPicture.asset("assets/images/search.svg"))),
       Padding(
           padding: EdgeInsets.only(right: 15.w),
           child: InkWell(
               onTap: () {
                 Get.to(() => NotificationScreen());
               },
-              child: Image.asset("assets/images/notifiction.png")))
+              child: SvgPicture.asset("assets/images/notifiction.svg")))
     ],
   );
 }
@@ -88,8 +96,13 @@ Widget storyView() {
                           margin: EdgeInsets.only(left: 10.w),
                           width: 56,
                           height: 56,
-                          child: Image.asset(
-                            "assets/images/addhome.png",
+                          child: Padding(
+                            padding: EdgeInsets.all(15.w.h),
+                            child: SvgPicture.asset(
+                              "assets/images/addhome.svg",
+                              width: 2.w,
+                              height: 3.h,
+                            ),
                           ),
                           decoration: BoxDecoration(
                             color: Color(0xffEBE9EC),

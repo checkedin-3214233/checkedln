@@ -1,11 +1,15 @@
+import 'package:checkedln/global.dart';
+import 'package:checkedln/res/colors/routes/route_constant.dart';
 import 'package:checkedln/views/checkin/select_location.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../controller/checkin/check_in_controller.dart';
 import '../../data/injection/dependency_injection.dart';
+import '../../data/local/cache_manager.dart';
 import '../../res/colors/colors.dart';
 import 'package:intl/intl.dart'; // Import the intl package for date formatting
 
@@ -23,7 +27,7 @@ Widget checkInButton(Widget child, Function() onPressed, Color color) {
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
       alignment: Alignment.center,
-      width: MediaQuery.of(Get.context!).size.width,
+      width: MediaQuery.of(ctx!).size.width,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(15.5.w.h),
@@ -71,10 +75,8 @@ Widget checkIn(int count, bool isUpcoming) {
               children: [
                 Text(
                   isUpcoming
-                      ? _checkInController
-                      .upcomingEvents[count].checkInName!
-                      : _checkInController
-                      .pastEvent[count].checkInName!,
+                      ? _checkInController.upcomingEvents[count].checkInName!
+                      : _checkInController.pastEvent[count].checkInName!,
                   style:
                       TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
                 ),
@@ -88,11 +90,7 @@ Widget checkIn(int count, bool isUpcoming) {
                       width: 5.w,
                     ),
                     Text(
-                      "${isUpcoming
-                          ? _checkInController
-                          .upcomingEvents[count].attendies!.length
-                          : _checkInController
-                          .pastEvent[count].attendies!.length} Attending",
+                      "${isUpcoming ? _checkInController.upcomingEvents[count].attendies!.length : _checkInController.pastEvent[count].attendies!.length} Attending",
                       style: TextStyle(
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w600,
@@ -123,10 +121,8 @@ Widget checkIn(int count, bool isUpcoming) {
         ),
         Text(
           isUpcoming
-              ? _checkInController
-              .upcomingEvents[count].location!
-              : _checkInController
-              .pastEvent[count].location!,
+              ? _checkInController.upcomingEvents[count].location!
+              : _checkInController.pastEvent[count].location!,
           style: TextStyle(
               color: Color(0xff000000),
               fontWeight: FontWeight.w600,
@@ -150,10 +146,8 @@ Widget checkIn(int count, bool isUpcoming) {
                 ),
                 Text(
                   DateFormat('EEEE').format(isUpcoming
-                      ? _checkInController
-                      .upcomingEvents[count].startDateTime!
-                      : _checkInController
-                      .pastEvent[count].startDateTime!),
+                      ? _checkInController.upcomingEvents[count].startDateTime!
+                      : _checkInController.pastEvent[count].startDateTime!),
                   style: TextStyle(
                       color: Color(0xff000000),
                       fontWeight: FontWeight.w600,
@@ -161,10 +155,8 @@ Widget checkIn(int count, bool isUpcoming) {
                 ),
                 Text(
                   DateFormat('MMM dd, yyyy').format(isUpcoming
-                      ? _checkInController
-                      .upcomingEvents[count].startDateTime!
-                      : _checkInController
-                      .pastEvent[count].startDateTime!),
+                      ? _checkInController.upcomingEvents[count].startDateTime!
+                      : _checkInController.pastEvent[count].startDateTime!),
                   style: TextStyle(
                       color: Color(0xff000000),
                       fontWeight: FontWeight.w600,
@@ -183,11 +175,7 @@ Widget checkIn(int count, bool isUpcoming) {
                       fontSize: 12.sp),
                 ),
                 Text(
-                  "${DateFormat('h:mm a').format(isUpcoming
-                      ? _checkInController
-                      .upcomingEvents[count].startDateTime!
-                      : _checkInController
-                      .pastEvent[count].startDateTime!)} Onwards",
+                  "${DateFormat('h:mm a').format(isUpcoming ? _checkInController.upcomingEvents[count].startDateTime! : _checkInController.pastEvent[count].startDateTime!)} Onwards",
                   style: TextStyle(
                       color: Color(0xff000000),
                       fontWeight: FontWeight.w600,
@@ -204,37 +192,49 @@ Widget checkIn(int count, bool isUpcoming) {
           height: 1.0.h, // Height of the line
           color: Color(0xFFDDD8DF), // Color of the line
         ),
-     isUpcoming?   checkInButton(
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset("assets/images/inviteIcon.png"),
-                Text(
-                  "Invite People",
-                  style: TextStyle(
-                      color: Color(0xff28222A),
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600),
-                )
-              ],
-            ),
-            () {},
-            Color((0xffFFFFFF))):checkInButton(
-         Row(
-           mainAxisAlignment: MainAxisAlignment.center,
-           children: [
-             Image.asset("assets/images/gallery.png",height: 14.h,),
-             Text(
-               "Event Gallery",
-               style: TextStyle(
-                   color: Color(0xff28222A),
-                   fontSize: 14.sp,
-                   fontWeight: FontWeight.w600),
-             )
-           ],
-         ),
-             () {},
-         Color((0xffFFFFFF))),
+        isUpcoming
+            ? checkInButton(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset("assets/images/inviteIcon.png"),
+                    Text(
+                      "Invite People",
+                      style: TextStyle(
+                          color: Color(0xff28222A),
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600),
+                    )
+                  ],
+                ), () {
+                bool isCurrentUser =
+                    _checkInController.upcomingEvents[count].createdBy ==
+                        getIt<CacheManager>().getUserId();
+                print(isCurrentUser);
+                if (!isCurrentUser) {
+                  Share.share(
+                      'check out this new event in Checkdln https://checkedln-server.onrender.com${RoutesConstants.checkin}/${_checkInController.upcomingEvents[count].id}');
+                }
+              }, Color((0xffFFFFFF)))
+            : checkInButton(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/images/gallery.png",
+                      height: 14.h,
+                    ),
+                    Text(
+                      "Event Gallery",
+                      style: TextStyle(
+                          color: Color(0xff28222A),
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600),
+                    )
+                  ],
+                ),
+                () {},
+                Color((0xffFFFFFF))),
         checkInButton(
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -256,7 +256,7 @@ Widget checkIn(int count, bool isUpcoming) {
   );
 }
 
-Widget checkIn2(){
+Widget checkIn2() {
   return Container(
     margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -276,7 +276,8 @@ Widget checkIn2(){
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(14.sp),
                   image: DecorationImage(
-                      image: NetworkImage("https://www.adobe.com/content/dam/cc/us/en/creativecloud/photography/discover/concert-photography/thumbnail.jpeg"))),
+                      image: NetworkImage(
+                          "https://www.adobe.com/content/dam/cc/us/en/creativecloud/photography/discover/concert-photography/thumbnail.jpeg"))),
             ),
             SizedBox(
               width: 10.w,
@@ -287,7 +288,7 @@ Widget checkIn2(){
                 Text(
                   "Arjit Singh Concert",
                   style:
-                  TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
+                      TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
                 ),
                 Row(
                   children: [
@@ -440,17 +441,22 @@ Widget checkIn2(){
                 )
               ],
             ),
-                () {},
+            () {},
             Color((0xffFFFFFF)))
       ],
     ),
   );
 }
+
 String _formatTimeOfDay(TimeOfDay timeOfDay) {
-  final hour = timeOfDay.hour.toString().padLeft(2, '0'); // Ensure two digits for hour
-  final minute = timeOfDay.minute.toString().padLeft(2, '0'); // Ensure two digits for minute
+  final hour =
+      timeOfDay.hour.toString().padLeft(2, '0'); // Ensure two digits for hour
+  final minute = timeOfDay.minute
+      .toString()
+      .padLeft(2, '0'); // Ensure two digits for minute
   return '$hour:$minute'; // Format as "HH:mm"
 }
+
 Widget userName(TextEditingController controller, TextInputType type,
     String hintText, bool isEditable) {
   const gender = ["male", "female", "other"];
@@ -458,8 +464,10 @@ Widget userName(TextEditingController controller, TextInputType type,
     maxLines: hintText == "Write about Check-in" ? 3 : null,
     textInputAction: TextInputAction.next,
     onTap: () async {
-      if(hintText=="Event Venue"){
-        Get.to(()=>SelectLocation(controller: controller,));
+      if (hintText == "Event Venue") {
+        Get.to(() => SelectLocation(
+              controller: controller,
+            ));
       }
       if (hintText == "Start Date" || hintText == "End Date") {
         final DateTime? picked = await showDatePicker(
@@ -471,13 +479,11 @@ Widget userName(TextEditingController controller, TextInputType type,
         if (picked != null) {
           controller.text = picked.toString().substring(0, 10);
         }
-
       }
       if (hintText == "Start Time" || hintText == "End Time") {
         final TimeOfDay? picked = await showTimePicker(
             context: Get.context!, initialTime: TimeOfDay.now());
         if (picked != null) {
-
           controller.text = _formatTimeOfDay(picked);
         }
       }
@@ -517,10 +523,11 @@ Widget userName(TextEditingController controller, TextInputType type,
   ).marginSymmetric(vertical: 3.h);
 }
 
-Widget twoTile(String title, Widget widget, Function() onPressed,EdgeInsetsGeometry padding) {
+Widget twoTile(String title, Widget widget, Function() onPressed,
+    EdgeInsetsGeometry padding) {
   return Container(
     alignment: Alignment.center,
-    width: MediaQuery.of(Get.context!).size.width,
+    width: MediaQuery.of(ctx!).size.width,
     padding: padding,
     decoration: BoxDecoration(
         color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(16.w.h)),

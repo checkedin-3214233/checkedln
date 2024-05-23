@@ -1,3 +1,4 @@
+import 'package:checkedln/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -40,7 +41,7 @@ Widget tabContainer(String text) {
 Widget twoTile(String title, Widget widget, Function() onPressed) {
   return Container(
     alignment: Alignment.center,
-    width: MediaQuery.of(Get.context!).size.width,
+    width: MediaQuery.of(ctx!).size.width,
     padding: EdgeInsets.symmetric(vertical: 10.h),
     decoration: BoxDecoration(
         color: Color(0xffFFFFFF), borderRadius: BorderRadius.circular(16.w.h)),
