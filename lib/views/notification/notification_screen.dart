@@ -69,12 +69,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                   trailing: InkWell(
                     onTap: () {
-                      Get.to(
-                        () => CheckInfoScreen(
-                          id: data["event"]["_id"],
-                          isDeep: false,
-                        ),
-                      );
+                      // Get.to(
+                      //   () => CheckInfoScreen(
+                      //     id: data["event"]["_id"],
+                      //     isDeep: false,
+                      //   ),
+                      // );
                     },
                     child: Image.network(
                       data["event"]["bannerImages"],

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:checkedln/res/snakbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -53,9 +54,9 @@ class _MakeYourProfilePopState extends State<MakeYourProfilePop> {
                       child: Center(
                         child: InkWell(
                           onTap: () async {
-                            if (index == 0) {
-                              Get.rawSnackbar(
-                                  message: "Profile Image Can'nt be changed");
+                            if (index == 0 &&
+                                _authController.userImages[0].isNotEmpty) {
+                              showSnakBar("Profile Image Can't be changed");
                             } else {
                               XFile? image = await ImagePicker()
                                   .pickImage(source: ImageSource.gallery);
@@ -70,15 +71,16 @@ class _MakeYourProfilePopState extends State<MakeYourProfilePop> {
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12.0),
-                            child: _authController.userImages[index] == "loading"
-                                ? Center(child: CircularProgressIndicator()): _authController.userImages[index].isNotEmpty
-                                ? Image.network(
-                                    _authController.userImages[index],
-                                    fit: BoxFit.cover,
-                                    width: 114.w,
-                                    height: 111.h,
-                                  )
-
+                            child: _authController.userImages[index] ==
+                                    "loading"
+                                ? Center(child: CircularProgressIndicator())
+                                : _authController.userImages[index].isNotEmpty
+                                    ? Image.network(
+                                        _authController.userImages[index],
+                                        fit: BoxFit.cover,
+                                        width: 114.w,
+                                        height: 111.h,
+                                      )
                                     : Image.asset(
                                         "assets/images/add_circle.webp",
                                         fit: BoxFit.cover,

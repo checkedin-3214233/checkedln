@@ -1,4 +1,5 @@
 import 'package:checkedln/global.dart';
+import 'package:checkedln/res/snakbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,7 +17,7 @@ class FirebaseAuthServices {
       phoneNumber: phoneNumber,
       verificationCompleted: (PhoneAuthCredential credential) {},
       verificationFailed: (FirebaseAuthException e) {
-        Get.rawSnackbar(message: e.code.toString());
+        showSnakBar(e.code.toString());
       },
       codeSent: (String verificationId, int? resendToken) {
         Get.find<AuthController>().verificationId.value = verificationId;
@@ -36,10 +37,10 @@ class FirebaseAuthServices {
         print(authCred.user);
         return true;
       } on FirebaseAuthException catch (e) {
-        Get.rawSnackbar(message: e.code.toString());
+        showSnakBar(e.code.toString());
       }
     } else {
-      Get.rawSnackbar(message: "Invalid Otp");
+      showSnakBar("Invalid Otp");
       return false;
     }
     return false;

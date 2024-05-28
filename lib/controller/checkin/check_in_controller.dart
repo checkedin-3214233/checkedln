@@ -1,7 +1,9 @@
 import 'package:checkedln/models/checkIn/event_model.dart';
 import 'package:checkedln/models/checkIn/home_event_model.dart';
+import 'package:checkedln/res/colors/routes/route_constant.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 
 import '../../services/checkIn/check_in_services.dart';
@@ -28,6 +30,16 @@ class CheckInController extends GetxController {
       }
     }
     isPastEventsLoading.value = false;
+  }
+
+  getSharebleLink(String id) async {
+    dio.Response response = await _checkInServices.getShareLink(id);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return "${dotenv.env["BASE_URL"]!}" +
+          "shareCheckin/" +
+          response.data["shareEvent"]["_id"];
+    }
+    return "";
   }
 
   getUpcomingEvent() async {

@@ -1,10 +1,61 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'userModel.g.dart';
+part 'user_profile_model.g.dart';
 
 @JsonSerializable()
-class UserModel {
-  UserModel({
+class UserProfileModel {
+  UserProfileModel(
+      {required this.success,
+      required this.message,
+      required this.user,
+      required this.isRequested,
+      required this.isSent});
+
+  final bool? success;
+  static const String successKey = "success";
+
+  final String? message;
+  static const String messageKey = "message";
+
+  final User? user;
+  static const String userKey = "user";
+
+  final bool? isRequested;
+  static const String isRequestedKey = "isRequested";
+
+  final bool? isSent;
+  static const String isSentKey = "isSent";
+
+  UserProfileModel copyWith({
+    bool? success,
+    String? message,
+    User? user,
+    bool? isRequested,
+    bool? isSent,
+  }) {
+    return UserProfileModel(
+      success: success ?? this.success,
+      message: message ?? this.message,
+      user: user ?? this.user,
+      isRequested: isRequested ?? this.isRequested,
+      isSent: isSent ?? this.isSent,
+    );
+  }
+
+  factory UserProfileModel.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserProfileModelToJson(this);
+
+  @override
+  String toString() {
+    return "$success, $message, $user, $isRequested, $isSent, ";
+  }
+}
+
+@JsonSerializable()
+class User {
+  User({
     required this.id,
     required this.name,
     required this.userName,
@@ -52,7 +103,7 @@ class UserModel {
   final String? bio;
   static const String bioKey = "bio";
 
-  final List<dynamic>? buddies;
+  final List<String>? buddies;
   static const String buddiesKey = "buddies";
 
   final DateTime? createdAt;
@@ -65,7 +116,7 @@ class UserModel {
   final int? v;
   static const String vKey = "__v";
 
-  UserModel copyWith({
+  User copyWith({
     String? id,
     String? name,
     String? userName,
@@ -76,12 +127,12 @@ class UserModel {
     String? gender,
     List<String>? userImages,
     String? bio,
-    List<dynamic>? buddies,
+    List<String>? buddies,
     DateTime? createdAt,
     DateTime? updatedAt,
     int? v,
   }) {
-    return UserModel(
+    return User(
       id: id ?? this.id,
       name: name ?? this.name,
       userName: userName ?? this.userName,
@@ -99,10 +150,9 @@ class UserModel {
     );
   }
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
-  Map<String, dynamic> toJson() => _$UserModelToJson(this);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 
   @override
   String toString() {

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:checkedln/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -115,8 +117,10 @@ Widget nearByCheckIn() {
               itemBuilder: (context, i) {
                 return InkWell(
                   onTap: () {
-                    context.push(
-                      "${RoutesConstants.checkin}/${_checkInController.nearByEvents[i].id!}",
+                    log(_checkInController.nearByEvents[i].id!);
+
+                    ctx!.push(
+                      "${RoutesConstants.checkin}/${_checkInController.nearByEvents[i].id!}/${"m"}/${false}",
                     );
                   },
                   child: Container(

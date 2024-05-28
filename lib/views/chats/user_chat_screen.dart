@@ -12,8 +12,16 @@ import '../../data/local/cache_manager.dart';
 import '../profiles/profile_avatar.dart';
 
 class UserChatScreen extends StatefulWidget {
-  UserModel? userModel;
-  UserChatScreen({super.key, required this.userModel});
+  String? id;
+  String? userName;
+  String? userId;
+  String? profileImageUrl;
+  UserChatScreen(
+      {super.key,
+      required this.id,
+      required this.userId,
+      required this.userName,
+      required this.profileImageUrl});
 
   @override
   State<UserChatScreen> createState() => _UserChatScreenState();
@@ -25,7 +33,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
 
   @override
   void initState() {
-    _chatController.getMessages(widget.userModel!.id!);
+    _chatController.getMessages(widget.id!);
     super.initState();
   }
 
@@ -33,10 +41,11 @@ class _UserChatScreenState extends State<UserChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: userChatAppBar(widget.userModel!),
+      appBar: userChatAppBar(
+          widget.userId!, widget.userName!, widget.profileImageUrl!),
       bottomNavigationBar: Padding(
           padding: MediaQuery.of(context).viewInsets,
-          child: chatTextBox(widget.userModel!.id!)),
+          child: chatTextBox(widget.id!)),
       body: SafeArea(
           child: Column(
         children: [
@@ -108,19 +117,11 @@ class _UserChatScreenState extends State<UserChatScreen> {
                                       ? Row(
                                           children: [
                                             ProfileAvatar(
-                                              imageUrl: widget
-                                                  .userModel!.profileImageUrl!,
+                                              imageUrl: widget.profileImageUrl!,
                                               size: 32,
                                               child: SizedBox.shrink(),
                                               borderColor: Colors.white,
                                             ).marginOnly(right: 2.w),
-                                            Text(
-                                              widget.userModel!.userName!,
-                                              style: TextStyle(
-                                                  fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Color(0xff050506)),
-                                            ),
                                           ],
                                         )
                                       : SizedBox.shrink(),

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../controller/checkin/check_in_controller.dart';
@@ -42,216 +43,235 @@ Widget checkInButton(Widget child, Function() onPressed, Color color) {
 Widget checkIn(int count, bool isUpcoming) {
   CheckInController _checkInController = Get.find<CheckInController>();
 
-  return Container(
-    margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-    decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24.sp), color: Color(0xffF0EFF0)),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 66.w,
-              height: 66.h,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14.sp),
-                  image: DecorationImage(
-                      image: NetworkImage(isUpcoming
-                          ? _checkInController
-                              .upcomingEvents[count].bannerImages!
-                          : _checkInController
-                              .pastEvent[count].bannerImages!))),
-            ),
-            SizedBox(
-              width: 10.w,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isUpcoming
-                      ? _checkInController.upcomingEvents[count].checkInName!
-                      : _checkInController.pastEvent[count].checkInName!,
-                  style:
-                      TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
-                ),
-                Row(
-                  children: [
-                    Image.asset(
-                        width: 15.w,
-                        height: 15.h,
-                        "assets/images/attending.png"),
-                    SizedBox(
-                      width: 5.w,
-                    ),
-                    Text(
-                      "${isUpcoming ? _checkInController.upcomingEvents[count].attendies!.length : _checkInController.pastEvent[count].attendies!.length} Attending",
-                      style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xff4A404F)),
-                    )
-                  ],
-                )
-              ],
-            )
-          ],
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Container(
-          height: 1.0.h, // Height of the line
-          color: Color(0xFFDDD8DF), // Color of the line
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Text(
-          "Venue",
-          style: TextStyle(
-              color: Color(0xff85738C),
-              fontWeight: FontWeight.w600,
-              fontSize: 12.sp),
-        ),
-        Text(
+  return InkWell(
+    onTap: () {
+      if (isUpcoming) {
+        print(
+            "${RoutesConstants.checkin}/${_checkInController.upcomingEvents[count].id!}/${"m"}/${false}");
+
+        ctx!.push(
+          "${RoutesConstants.checkin}/${_checkInController.upcomingEvents[count].id!}/${"m"}/${false}",
+        );
+      }
+    },
+    child: Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24.sp), color: Color(0xffF0EFF0)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 66.w,
+                height: 66.h,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14.sp),
+                    image: DecorationImage(
+                        image: NetworkImage(isUpcoming
+                            ? _checkInController
+                                .upcomingEvents[count].bannerImages!
+                            : _checkInController
+                                .pastEvent[count].bannerImages!))),
+              ),
+              SizedBox(
+                width: 10.w,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isUpcoming
+                        ? _checkInController.upcomingEvents[count].checkInName!
+                        : _checkInController.pastEvent[count].checkInName!,
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
+                  ),
+                  Row(
+                    children: [
+                      Image.asset(
+                          width: 15.w,
+                          height: 15.h,
+                          "assets/images/attending.png"),
+                      SizedBox(
+                        width: 5.w,
+                      ),
+                      Text(
+                        "${isUpcoming ? _checkInController.upcomingEvents[count].attendies!.length : _checkInController.pastEvent[count].attendies!.length} Attending",
+                        style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xff4A404F)),
+                      )
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Container(
+            height: 1.0.h, // Height of the line
+            color: Color(0xFFDDD8DF), // Color of the line
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Text(
+            "Venue",
+            style: TextStyle(
+                color: Color(0xff85738C),
+                fontWeight: FontWeight.w600,
+                fontSize: 12.sp),
+          ),
+          Text(
+            isUpcoming
+                ? _checkInController.upcomingEvents[count].location!
+                : _checkInController.pastEvent[count].location!,
+            style: TextStyle(
+                color: Color(0xff000000),
+                fontWeight: FontWeight.w600,
+                fontSize: 14.sp),
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Date",
+                    style: TextStyle(
+                        color: Color(0xff85738C),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12.sp),
+                  ),
+                  Text(
+                    DateFormat('EEEE').format(isUpcoming
+                        ? _checkInController
+                            .upcomingEvents[count].startDateTime!
+                        : _checkInController.pastEvent[count].startDateTime!),
+                    style: TextStyle(
+                        color: Color(0xff000000),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp),
+                  ),
+                  Text(
+                    DateFormat('MMM dd, yyyy').format(isUpcoming
+                        ? _checkInController
+                            .upcomingEvents[count].startDateTime!
+                        : _checkInController.pastEvent[count].startDateTime!),
+                    style: TextStyle(
+                        color: Color(0xff000000),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp),
+                  )
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Time",
+                    style: TextStyle(
+                        color: Color(0xff85738C),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12.sp),
+                  ),
+                  Text(
+                    "${DateFormat('h:mm a').format(isUpcoming ? _checkInController.upcomingEvents[count].startDateTime! : _checkInController.pastEvent[count].startDateTime!)} Onwards",
+                    style: TextStyle(
+                        color: Color(0xff000000),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp),
+                  )
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Container(
+            height: 1.0.h, // Height of the line
+            color: Color(0xFFDDD8DF), // Color of the line
+          ),
           isUpcoming
-              ? _checkInController.upcomingEvents[count].location!
-              : _checkInController.pastEvent[count].location!,
-          style: TextStyle(
-              color: Color(0xff000000),
-              fontWeight: FontWeight.w600,
-              fontSize: 14.sp),
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Date",
-                  style: TextStyle(
-                      color: Color(0xff85738C),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12.sp),
-                ),
-                Text(
-                  DateFormat('EEEE').format(isUpcoming
-                      ? _checkInController.upcomingEvents[count].startDateTime!
-                      : _checkInController.pastEvent[count].startDateTime!),
-                  style: TextStyle(
-                      color: Color(0xff000000),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp),
-                ),
-                Text(
-                  DateFormat('MMM dd, yyyy').format(isUpcoming
-                      ? _checkInController.upcomingEvents[count].startDateTime!
-                      : _checkInController.pastEvent[count].startDateTime!),
-                  style: TextStyle(
-                      color: Color(0xff000000),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp),
-                )
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Time",
-                  style: TextStyle(
-                      color: Color(0xff85738C),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12.sp),
-                ),
-                Text(
-                  "${DateFormat('h:mm a').format(isUpcoming ? _checkInController.upcomingEvents[count].startDateTime! : _checkInController.pastEvent[count].startDateTime!)} Onwards",
-                  style: TextStyle(
-                      color: Color(0xff000000),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14.sp),
-                )
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 10.h,
-        ),
-        Container(
-          height: 1.0.h, // Height of the line
-          color: Color(0xFFDDD8DF), // Color of the line
-        ),
-        isUpcoming
-            ? checkInButton(
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset("assets/images/inviteIcon.png"),
-                    Text(
-                      "Invite People",
-                      style: TextStyle(
-                          color: Color(0xff28222A),
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600),
-                    )
-                  ],
-                ), () {
-                bool isCurrentUser =
-                    _checkInController.upcomingEvents[count].createdBy ==
-                        getIt<CacheManager>().getUserId();
-                print(isCurrentUser);
-                if (!isCurrentUser) {
-                  Share.share(
-                      'check out this new event in Checkdln https://checkedln-server.onrender.com${RoutesConstants.checkin}/${_checkInController.upcomingEvents[count].id}');
-                }
-              }, Color((0xffFFFFFF)))
-            : checkInButton(
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      "assets/images/gallery.png",
-                      height: 14.h,
-                    ),
-                    Text(
-                      "Event Gallery",
-                      style: TextStyle(
-                          color: Color(0xff28222A),
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600),
-                    )
-                  ],
-                ),
-                () {},
-                Color((0xffFFFFFF))),
-        checkInButton(
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset("assets/images/upload.png"),
-                Text(
-                  "Upload Photos",
-                  style: TextStyle(
-                      color: Color(0xff28222A),
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600),
-                )
-              ],
-            ),
-            () {},
-            Color((0xffFFFFFF)))
-      ],
+              ? checkInButton(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset("assets/images/inviteIcon.png"),
+                      Text(
+                        "Invite",
+                        style: TextStyle(
+                            color: Color(0xff28222A),
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600),
+                      )
+                    ],
+                  ), () async {
+                  bool isCurrentUser =
+                      _checkInController.upcomingEvents[count].createdBy ==
+                          getIt<CacheManager>().getUserId();
+                  print(isCurrentUser);
+                  if (!isCurrentUser) {
+                    Share.share(
+                        'check out this new event in Checkdln https://checkedln-server.onrender.com${RoutesConstants.checkin}/${_checkInController.upcomingEvents[count].id}/${_checkInController.upcomingEvents[count].checkInName}/${false}');
+                  } else {
+                    String url = await _checkInController.getSharebleLink(
+                        _checkInController.upcomingEvents[count].id!);
+                    print(url);
+                    Share.share('Join My new event in Checkdln $url');
+                  }
+                }, Color((0xffFFFFFF)))
+              : checkInButton(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/images/gallery.png",
+                        height: 14.h,
+                      ),
+                      Text(
+                        "Event Gallery",
+                        style: TextStyle(
+                            color: Color(0xff28222A),
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600),
+                      )
+                    ],
+                  ),
+                  () {},
+                  Color((0xffFFFFFF))),
+          checkInButton(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset("assets/images/upload.png"),
+                  Text(
+                    "Upload Photos",
+                    style: TextStyle(
+                        color: Color(0xff28222A),
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600),
+                  )
+                ],
+              ),
+              () {},
+              Color((0xffFFFFFF)))
+        ],
+      ),
     ),
   );
 }
@@ -465,13 +485,12 @@ Widget userName(TextEditingController controller, TextInputType type,
     textInputAction: TextInputAction.next,
     onTap: () async {
       if (hintText == "Event Venue") {
-        Get.to(() => SelectLocation(
-              controller: controller,
-            ));
+        ctx!.push(RoutesConstants.selectLocation, extra: controller);
       }
       if (hintText == "Start Date" || hintText == "End Date") {
         final DateTime? picked = await showDatePicker(
-          context: Get.context!,
+          context: ctx!,
+          barrierDismissible: false,
           initialDate: DateTime.now(),
           firstDate: DateTime.now(),
           lastDate: DateTime(2050),
@@ -481,8 +500,8 @@ Widget userName(TextEditingController controller, TextInputType type,
         }
       }
       if (hintText == "Start Time" || hintText == "End Time") {
-        final TimeOfDay? picked = await showTimePicker(
-            context: Get.context!, initialTime: TimeOfDay.now());
+        final TimeOfDay? picked =
+            await showTimePicker(context: ctx!, initialTime: TimeOfDay.now());
         if (picked != null) {
           controller.text = _formatTimeOfDay(picked);
         }

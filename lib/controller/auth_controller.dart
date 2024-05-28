@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:checkedln/data/local/cache_manager.dart';
 import 'package:checkedln/global.dart';
+import 'package:checkedln/res/snakbar.dart';
 import 'package:checkedln/services/auth/auth_services.dart';
 import 'package:checkedln/services/upload_image.dart';
 import 'package:dio/dio.dart' as dio;
@@ -49,10 +50,10 @@ class AuthController extends GetxController {
         await _firebaseAuthServices.sendOtp(
             "${countryCodeController.text}${phoneNumberController.text}");
       } catch (e) {
-        Get.rawSnackbar(message: "Some error occurred at our end $e");
+        showSnakBar("Some error occurred at our end $e");
       }
     } else {
-      Get.rawSnackbar(message: "Invalid Phone Number");
+      showSnakBar("Invalid Phone Number");
     }
     isSendingOtp.value = false;
   }
@@ -75,11 +76,11 @@ class AuthController extends GetxController {
     bool isVerified =
         await _firebaseAuthServices.veryfyotp(verificationId.value, otp);
     if (isVerified) {
-      Get.rawSnackbar(message: "OTP verification Successfull");
+      showSnakBar("OTP verification Successfull");
       if (isLoginScreen.value) {
         await login();
       } else {
-        Get.to(() => GetStarted());
+        ctx!.pushReplacement(RoutesConstants.createProfile);
       }
     }
     isOtpVerification.value = false;
@@ -97,20 +98,20 @@ class AuthController extends GetxController {
           if (response.data['isUserExists']) {
             await validatePhoneNumber();
           } else {
-            Get.rawSnackbar(message: response.data['message']);
+            showSnakBar(response.data['message']);
           }
         } else {
           if (!response.data['isUserExists']) {
             await validatePhoneNumber();
           } else {
-            Get.rawSnackbar(message: response.data['message']);
+            showSnakBar(response.data['message']);
           }
         }
       } else {
-        Get.rawSnackbar(message: "Some error occurred at our end");
+        showSnakBar("Some error occurred at our end");
       }
     } catch (e) {
-      Get.rawSnackbar(message: "Some error occurred at our end $e");
+      showSnakBar("Some error occurred at our end $e");
     }
     isSendingOtp.value = false;
   }
@@ -125,14 +126,14 @@ class AuthController extends GetxController {
         await cacheManager.setUserId(response.data["user"]["userId"]);
         await cacheManager.setToken(response.data["user"]["accessToken"],
             response.data["user"]["refreshToken"]);
-        Get.rawSnackbar(message: response.data['message']);
+        showSnakBar(response.data['message']);
 
         ctx!.pushReplacement(RoutesConstants.home);
       } else {
-        Get.rawSnackbar(message: "Some error occurred at our end");
+        showSnakBar("Some error occurred at our end");
       }
     } catch (e) {
-      Get.rawSnackbar(message: "Some error occurred at our end $e");
+      showSnakBar("Some error occurred at our end $e");
     }
   }
 
@@ -157,54 +158,53 @@ class AuthController extends GetxController {
           images,
           bio.text);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.rawSnackbar(message: response.data['message']);
+        showSnakBar(response.data['message']);
         await cacheManager.setLoggedIn();
         await cacheManager.setUserId(response.data["user"]["userId"]);
 
         await cacheManager.setToken(response.data["user"]["accessToken"],
             response.data["user"]["refreshToken"]);
-        Get.offAll(() => Home());
+        ctx!.pushReplacement(RoutesConstants.home);
       } else {
-        Get.rawSnackbar(message: response.data['message']);
+        showSnakBar(response.data['message']);
       }
     } catch (e) {
-      Get.rawSnackbar(message: "Some error occurred at our end $e");
+      showSnakBar("Some error occurred at our end $e");
     }
     isCreatingAccount.value = false;
   }
 
   bool validateGetStarted() {
     if (firstName.text.isEmpty) {
-      Get.rawSnackbar(message: "First Name is required");
+      showSnakBar("First Name is required");
       return false;
     }
     if (lastName.text.isEmpty) {
-      Get.rawSnackbar(message: "Last Name is required");
+      showSnakBar("Last Name is required");
       return false;
     }
     if (userName.text.isEmpty) {
-      Get.rawSnackbar(message: "User Name is required");
+      showSnakBar("User Name is required");
 
       return false;
     }
     if (userName.text.length < 6) {
-      Get.rawSnackbar(message: 'Username must be at least 6 characters');
+      showSnakBar('Username must be at least 6 characters');
 
       return false;
     }
     if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(userName.text)) {
-      Get.rawSnackbar(
-          message:
-              'Username can only contain letters, numbers, and underscores');
+      showSnakBar(
+          'Username can only contain letters, numbers, and underscores');
 
       return false;
     }
     if (dateOfBirth.text.isEmpty) {
-      Get.rawSnackbar(message: "Date of Birth is required");
+      showSnakBar("Date of Birth is required");
       return false;
     }
     if (gender.text == "Your Gender") {
-      Get.rawSnackbar(message: "Gender is required");
+      showSnakBar("Gender is required");
       return false;
     }
 

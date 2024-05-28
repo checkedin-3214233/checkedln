@@ -1,8 +1,11 @@
 import 'package:checkedln/data/injection/dependency_injection.dart';
+import 'package:checkedln/global.dart';
+import 'package:checkedln/res/colors/routes/route_constant.dart';
 import 'package:checkedln/views/auth/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controller/auth_controller.dart';
 import '../../res/colors/colors.dart';
@@ -64,7 +67,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         color: colorsFile.whiteColor, fontSize: 16.sp),
                   ),
                   () {
-                    Get.to(() => const SignUp());
+                    ctx!.push(RoutesConstants.signUp);
                   },
                 ),
                 authButton(
@@ -76,7 +79,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         color: colorsFile.textColor5, fontSize: 16.sp),
                   ),
                   () {
-                    Get.to(() => const Login());
+                    ctx!.push(RoutesConstants.login);
                   },
                 ),
               ],

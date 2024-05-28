@@ -1,13 +1,16 @@
 import 'package:checkedln/controller/chat_controller.dart';
+import 'package:checkedln/global_index.dart';
 import 'package:checkedln/models/userChat/userChatModel.dart';
 import 'package:checkedln/views/profiles/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../data/injection/dependency_injection.dart';
 import '../../models/user/userModel.dart';
+import '../../res/colors/routes/route_constant.dart';
 import '../../services/socket_services.dart';
 import 'user_chat_screen.dart';
 
@@ -19,9 +22,12 @@ Widget chatUserTile(int i, List<dynamic> onlineUsers) {
         return InkWell(
           onTap: () {
             _chatController.backUserChat(i);
-            Get.to(() => UserChatScreen(
-                  userModel: _chatController.userList[i].value.users,
-                ));
+            ctx!.push(
+                "${RoutesConstants.userChatScreen}/${_chatController.userList[i].value.users!.userName}/${_chatController.userList[i].value.users!.id}",
+                extra: _chatController
+                        .userList[i].value.users!.profileImageUrl.isEmpty
+                    ? "https://via.placeholder.com/150"
+                    : _chatController.userList[i].value.users!.profileImageUrl);
           },
           child: Container(
             padding: EdgeInsets.only(bottom: 20, top: i == 0 ? 20 : 0),
@@ -31,21 +37,22 @@ Widget chatUserTile(int i, List<dynamic> onlineUsers) {
                 Row(
                   children: [
                     ProfileAvatar(
-                            imageUrl: _chatController
-                                    .userList[i].value.users!.profileImageUrl ??
-                                "",
-                            size: 48,
-                            child: onlineUsers.contains(
-                                    _chatController.userList[i].value.users!.id)
-                                ? Container(
-                                    padding: EdgeInsets.all(6.0),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Color(0xff0FE16D),
-                                    ),
-                                  )
-                                : SizedBox.shrink(),borderColor: Colors.white,)
-                        .marginOnly(right: 10.w),
+                      imageUrl: _chatController
+                              .userList[i].value.users!.profileImageUrl ??
+                          "",
+                      size: 48,
+                      child: onlineUsers.contains(
+                              _chatController.userList[i].value.users!.id)
+                          ? Container(
+                              padding: EdgeInsets.all(6.0),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xff0FE16D),
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      borderColor: Colors.white,
+                    ).marginOnly(right: 10.w),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +122,7 @@ Widget chatUserTile(int i, List<dynamic> onlineUsers) {
       });
 }
 
-AppBar userChatAppBar(UserModel userModel) {
+AppBar userChatAppBar(String userId, String userName, String profileImageUrl) {
   return AppBar(
     backgroundColor: Color(0xffF3F3F3),
     elevation: 0,
@@ -124,8 +131,7 @@ AppBar userChatAppBar(UserModel userModel) {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         ProfileAvatar(
-          imageUrl:
-              userModel.profileImageUrl ?? "https://via.placeholder.com/150",
+          imageUrl: profileImageUrl ?? "https://via.placeholder.com/150",
           size: 48,
           child: StreamBuilder(
               stream: getIt<SocketServices>().onlineUserStream,
@@ -134,7 +140,7 @@ AppBar userChatAppBar(UserModel userModel) {
 
                 if (snapshot.hasData) {
                   List<dynamic> onlineUsers = snapshot.data as List<dynamic>;
-                  return onlineUsers.contains(userModel.id)
+                  return onlineUsers.contains(userId)
                       ? Container(
                           padding: EdgeInsets.all(6.0),
                           decoration: BoxDecoration(
@@ -153,7 +159,7 @@ AppBar userChatAppBar(UserModel userModel) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              userModel.userName ?? "",
+              userName ?? "",
               style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
@@ -164,7 +170,7 @@ AppBar userChatAppBar(UserModel userModel) {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<dynamic> onlineUsers = snapshot.data as List<dynamic>;
-                    return onlineUsers.contains(userModel.id)
+                    return onlineUsers.contains(userId)
                         ? Text(
                             "Active Now",
                             style: TextStyle(
@@ -183,7 +189,7 @@ AppBar userChatAppBar(UserModel userModel) {
     ),
     leading: InkWell(
       onTap: () {
-        Get.back();
+        ctx!.pop();
       },
       child: Image.asset(
         "assets/images/back_white.png",

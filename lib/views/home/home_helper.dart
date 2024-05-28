@@ -65,14 +65,14 @@ AppBar appBar() {
           padding: EdgeInsets.only(right: 15.w),
           child: InkWell(
               onTap: () {
-                Get.to(() => SearchScreen());
+                ctx!.push(RoutesConstants.search);
               },
               child: SvgPicture.asset("assets/images/search.svg"))),
       Padding(
           padding: EdgeInsets.only(right: 15.w),
-          child: InkWell(
+          child: GestureDetector(
               onTap: () {
-                Get.to(() => NotificationScreen());
+                ctx!.push(RoutesConstants.notification);
               },
               child: SvgPicture.asset("assets/images/notifiction.svg")))
     ],

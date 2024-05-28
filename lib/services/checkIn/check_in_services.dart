@@ -11,9 +11,34 @@ class CheckInServices {
   final String _upcomingEvent = dotenv.env["UPCOMING_EVENT"]!;
   final String _pastEvent = dotenv.env["PAST_EVENT"]!;
   final String _nearByEvent = dotenv.env["NEARBY_EVENT"]!;
+  final String _shareLink = dotenv.env["SHARE_EVENT"]!;
+  final String _getEventById = dotenv.env["GET_SHARED_EVENT"]!;
+  final String _joinEvent = dotenv.env["JOIN_EVENT"]!;
   getPastEvents() async {
     try {
       Response response = await dioNetwork.getData(_event + _pastEvent);
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  getSharedEventById(String id) async {
+    try {
+      Response response = await dioNetwork.getData(_event + _getEventById + id);
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  getShareLink(String id) async {
+    try {
+      Response response = await dioNetwork.getData(_event + _shareLink + id);
       print(response);
       return response;
     } catch (e) {
@@ -87,9 +112,24 @@ class CheckInServices {
     }
   }
 
-  getEventById(String id)async{
+  getEventById(String id) async {
     try {
-      Response response = await dioNetwork.getData(_event+"/${id}", );
+      Response response = await dioNetwork.getData(
+        _event + "/${id}",
+      );
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  joinEvent(String id) async {
+    try {
+      Response response = await dioNetwork.getData(
+        _event + _joinEvent + id,
+      );
       print(response);
       return response;
     } catch (e) {

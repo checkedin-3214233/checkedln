@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../res/colors/colors.dart';
 import '../../../global_index.dart';
@@ -46,7 +47,7 @@ AppBar appBar() {
     elevation: 0,
     leading: InkWell(
       onTap: () {
-        Get.back();
+        ctx!.pop();
       },
       child: Image.asset(
         "assets/images/back_btn.webp",
@@ -117,7 +118,7 @@ Widget userName(TextEditingController controller, TextInputType type,
     onTap: () async {
       if (hintText == "Date of Birth*") {
         final DateTime? picked = await showDatePicker(
-          context: Get.context!,
+          context: ctx!,
           initialDate: DateTime.now(),
           firstDate: DateTime(150),
           lastDate: DateTime.now(),
@@ -128,7 +129,7 @@ Widget userName(TextEditingController controller, TextInputType type,
       }
       if (hintText == "Select Gender") {
         showDialog(
-          context: Get.context!,
+          context: ctx!,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Select an Option'),

@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:checkedln/controller/auth_controller.dart';
+import 'package:checkedln/global.dart';
+import 'package:checkedln/res/colors/routes/route_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../data/injection/dependency_injection.dart';
@@ -48,7 +51,8 @@ class _GetStartedState extends State<GetStarted> {
                     XFile? image = await ImagePicker()
                         .pickImage(source: ImageSource.gallery);
                     if (image != null) {
-                      var imagePath = await _authController.uploadImage(File(image.path));
+                      var imagePath =
+                          await _authController.uploadImage(File(image.path));
                       _authController.profileImageUrl.value = imagePath;
                       _authController.userImages[0] = imagePath;
                     }
@@ -58,15 +62,18 @@ class _GetStartedState extends State<GetStarted> {
                         ? Image.asset(
                             "assets/images/add_profile_pic.webp",
                           ).marginOnly(bottom: 8.h)
-                        : _authController.isImageUploading.value? CircularProgressIndicator(): Container(
-                            height: 80.h,
-                            width: 80.w,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50.w.h),
-                                image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(_authController.profileImageUrl.value))),
-                          ).marginOnly(bottom: 8.h),
+                        : _authController.isImageUploading.value
+                            ? CircularProgressIndicator()
+                            : Container(
+                                height: 80.h,
+                                width: 80.w,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50.w.h),
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(_authController
+                                            .profileImageUrl.value))),
+                              ).marginOnly(bottom: 8.h),
                   ),
                 ),
                 Row(
@@ -75,18 +82,18 @@ class _GetStartedState extends State<GetStarted> {
                       Expanded(
                           flex: 5,
                           child: userName(_authController.firstName,
-                                  TextInputType.name, "First Name*",false)
+                                  TextInputType.name, "First Name*", false)
                               .marginOnly(right: 3.w)),
                       Expanded(
                           flex: 5,
                           child: userName(_authController.lastName,
-                                  TextInputType.name, "Last Name*",false)
+                                  TextInputType.name, "Last Name*", false)
                               .marginOnly(left: 3.w))
                     ]),
-                userName(
-                    _authController.userName, TextInputType.name, "User Name*",false),
+                userName(_authController.userName, TextInputType.name,
+                    "User Name*", false),
                 userName(_authController.dateOfBirth, TextInputType.text,
-                    "Date of Birth*",false),
+                    "Date of Birth*", false),
                 Container(
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
@@ -107,17 +114,22 @@ class _GetStartedState extends State<GetStarted> {
                       elevation: 16,
                       onChanged: (String? newValue) {
                         setState(() {
-                          _authController.selectedGender= newValue!;
-                          _authController.gender.text=newValue.toLowerCase();
+                          _authController.selectedGender = newValue!;
+                          _authController.gender.text = newValue.toLowerCase();
                         });
                       },
-                      items: <String>['Male', 'Female',"Other"].map((String value) {
+                      items: <String>['Male', 'Female', "Other"]
+                          .map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Row(
                             children: [
                               Icon(
-                                value == 'Male' ? Icons.male :value == 'Female' ?  Icons.female:Icons.error,
+                                value == 'Male'
+                                    ? Icons.male
+                                    : value == 'Female'
+                                        ? Icons.female
+                                        : Icons.error,
                                 color: Colors.grey[600],
                               ),
                               SizedBox(width: 8.0),
@@ -129,23 +141,26 @@ class _GetStartedState extends State<GetStarted> {
                     ),
                   ),
                 ),
-                userName(_authController.bio, TextInputType.text, "Bio",false),
-              Obx(() => _authController.isCreatingAccount.value?Center(child: CircularProgressIndicator(),):
-                authButton(
-                  getIt<ColorsFile>().primaryColor,
-                  Text(
-                    "Continue",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: colorsFile.whiteColor, fontSize: 16.sp),
-                  ),
-                  ()async {
-                    bool check =  _authController.validateGetStarted();
-                    if (check) {
-                      Get.to(() => MakeYourProfilePop());
-                    }
-                  },
-                )),
+                userName(_authController.bio, TextInputType.text, "Bio", false),
+                Obx(() => _authController.isCreatingAccount.value
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : authButton(
+                        getIt<ColorsFile>().primaryColor,
+                        Text(
+                          "Continue",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: colorsFile.whiteColor, fontSize: 16.sp),
+                        ),
+                        () async {
+                          bool check = _authController.validateGetStarted();
+                          if (check) {
+                            ctx!.push(RoutesConstants.authHelper);
+                          }
+                        },
+                      )),
                 textTwoTittle(
                     "Already have an account? ",
                     Text(

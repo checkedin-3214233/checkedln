@@ -1,7 +1,10 @@
+import 'package:checkedln/global.dart';
+import 'package:checkedln/res/colors/routes/route_constant.dart';
 import 'package:checkedln/views/profiles/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controller/search_controller.dart';
 import '../profiles/user_profile.dart';
@@ -84,15 +87,18 @@ class _SearchScreenState extends State<SearchScreen> {
               itemCount: _searchController.users.length,
               itemBuilder: (context, i) {
                 return InkWell(
-                  onTap: (){
-                    Get.to(()=>UserProfile(userModel: _searchController.users[i],));
+                  onTap: () {
+                    ctx!.push(
+                        "${RoutesConstants.userProfile}/${_searchController.users[i].id!}");
                   },
                   child: Row(
                     children: [
                       ProfileAvatar(
-                          imageUrl: _searchController.users[i].profileImageUrl!,
-                          size: 40,
-                          child: SizedBox.shrink(),borderColor: Colors.white,),
+                        imageUrl: _searchController.users[i].profileImageUrl!,
+                        size: 40,
+                        child: SizedBox.shrink(),
+                        borderColor: Colors.white,
+                      ),
                       SizedBox(
                         width: 10.w,
                       ),
@@ -118,7 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ],
                   ),
                 );
-              }).marginSymmetric(horizontal: 10.w,vertical: 10.h))
+              }).marginSymmetric(horizontal: 10.w, vertical: 10.h))
         ],
       )),
     );

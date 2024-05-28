@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../res/snakbar.dart';
 import '../services/upload_image.dart';
 
 class PostController extends GetxController {
@@ -47,7 +48,9 @@ class PostController extends GetxController {
 
   validatePost() {
     if (localImagesList.isEmpty) {
-      Get.rawSnackbar(message: "Please select atleast one  images");
+      showSnakBar(
+        "Please select atleast one  images",
+      );
       return false;
     }
 

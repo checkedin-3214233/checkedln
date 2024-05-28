@@ -1,12 +1,15 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:checkedln/global.dart';
+import 'package:checkedln/res/snakbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocode/geocode.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mapmyindia_gl/mapmyindia_gl.dart';
 import '../../data/injection/dependency_injection.dart';
 import '../../models/checkIn/event_model.dart';
@@ -38,47 +41,65 @@ class CreateCheckInController extends GetxController {
     isCreatingEvent.value = true;
 
     if (typeController.text.isEmpty) {
-      Get.rawSnackbar(message: "Type is required");
+      showSnakBar(
+        "Type is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
     if (bannerImage.value.isEmpty) {
-      Get.rawSnackbar(message: "Banner Image is required");
+      showSnakBar(
+        "Banner Image is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
     if (startDateTime.text.isEmpty) {
-      Get.rawSnackbar(message: "Start Date is required");
+      showSnakBar(
+        "Start Date is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
     if (endDateTime.text.isEmpty) {
-      Get.rawSnackbar(message: "End Date is required");
+      showSnakBar(
+        "End Date is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
     if (startTime.text.isEmpty) {
-      Get.rawSnackbar(message: "Start Time  is required");
+      showSnakBar(
+        "Start Time  is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
     if (endTime.text.isEmpty) {
-      Get.rawSnackbar(message: "End Time is required");
+      showSnakBar(
+        "End Time is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
     if (checkInNameController.text.isEmpty) {
-      Get.rawSnackbar(message: "Event Name  is required");
+      showSnakBar(
+        "Event Name  is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
     if (location.text.isEmpty) {
-      Get.rawSnackbar(message: "Event Venue  is required");
+      showSnakBar(
+        "Event Venue  is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
     if (aboutCheckIn.text.isEmpty) {
-      Get.rawSnackbar(message: "About Check In is required");
+      showSnakBar(
+        "About Check In is required",
+      );
       isCreatingEvent.value = false;
       return false;
     }
@@ -86,7 +107,9 @@ class CreateCheckInController extends GetxController {
       Coordinates coordinates =
           await getIt<LocationService>().getCoordinates(location.text);
       if (coordinates.latitude == null && coordinates.longitude == null) {
-        Get.rawSnackbar(message: "Location Not Found");
+        showSnakBar(
+          "Location Not Found",
+        );
         isCreatingEvent.value = false;
         return false;
       }
@@ -127,7 +150,11 @@ class CreateCheckInController extends GetxController {
               !priceController.text.isEmpty ? priceController.text : "0.0"),
           aboutCheckIn.text);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.rawSnackbar(message: "Event Created Succesfully");
+        final snackBar = SnackBar(
+          content: Text('Event Created Succesfully'),
+        );
+
+        ScaffoldMessenger.of(ctx!).showSnackBar(snackBar);
         EventModel eventModel = EventModel.fromJson(response.data["event"]);
         Get.find<CheckInController>().upcomingEvents.add(eventModel);
         Get.find<CheckInController>().update();
@@ -137,7 +164,7 @@ class CreateCheckInController extends GetxController {
       }
       isCreatingEvent.value = false;
 
-      Navigator.pop(Get.context!);
+      ctx!.pop();
     }
   }
 

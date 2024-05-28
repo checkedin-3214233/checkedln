@@ -1,11 +1,14 @@
 import 'package:checkedln/controller/checkin/check_in_controller.dart';
+import 'package:checkedln/global_index.dart';
 import 'package:checkedln/views/checkin/create_checkin.dart';
 import 'package:checkedln/views/checkin/past_checkin_sceen.dart';
 import 'package:checkedln/views/checkin/upcoming_checkin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controller/home_controller.dart';
+import '../../res/colors/routes/route_constant.dart';
 import '../widget_helper.dart';
 import 'checkin_widget_helper.dart';
 
@@ -41,7 +44,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
         child: Scaffold(
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Get.to(() => CreateCheckIn());
+              ctx!.push(RoutesConstants.createCheckin);
             },
             child: Icon(
               Icons.add,
