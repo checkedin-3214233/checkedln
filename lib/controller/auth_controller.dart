@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 
 import '../data/injection/dependency_injection.dart';
 import '../res/colors/routes/route_constant.dart';
+import '../services/Permission/permission_phone.dart';
 import '../services/firebase_auth_service.dart';
 import '../views/auth/get_started.dart';
 import '../views/home/home.dart';
@@ -164,6 +165,8 @@ class AuthController extends GetxController {
 
         await cacheManager.setToken(response.data["user"]["accessToken"],
             response.data["user"]["refreshToken"]);
+        getIt<PermissionPhone>().requestContactPermission();
+
         ctx!.pushReplacement(RoutesConstants.home);
       } else {
         showSnakBar(response.data['message']);
