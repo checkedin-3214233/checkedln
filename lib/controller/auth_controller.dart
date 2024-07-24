@@ -48,13 +48,30 @@ class AuthController extends GetxController {
     if (phoneNumberController.text.length == 10 &&
         countryCodeController.text.isNotEmpty) {
       try {
-        await _firebaseAuthServices.sendOtp(
+        await sendOtp(
             "${countryCodeController.text}${phoneNumberController.text}");
       } catch (e) {
         showSnakBar("Some error occurred at our end $e");
       }
     } else {
       showSnakBar("Invalid Phone Number");
+    }
+    isSendingOtp.value = false;
+  }
+
+  sendOtp(String number) async {
+    isSendingOtp.value = true;
+    try {
+      dio.Response response = await _authServices.sendOtp(number);
+      if (response.statusCode == 200) {
+        isOtpSent.value = true;
+        showSnakBar(response.data['message']);
+        ctx!.pushReplacement(RoutesConstants.otp);
+      } else {
+        showSnakBar(response.data['message']);
+      }
+    } catch (e) {
+      showSnakBar("Some error occurred at our end $e");
     }
     isSendingOtp.value = false;
   }
@@ -74,15 +91,22 @@ class AuthController extends GetxController {
 
   verifyOtp(String otp) async {
     isOtpVerification.value = true;
-    bool isVerified =
-        await _firebaseAuthServices.veryfyotp(verificationId.value, otp);
-    if (isVerified) {
-      showSnakBar("OTP verification Successfull");
-      if (isLoginScreen.value) {
-        await login();
+    try {
+      dio.Response response = await _authServices.verifyOtp(
+          "${countryCodeController.text}${phoneNumberController.text}", otp);
+      if (response.statusCode == 200 && response.data["isSuccesfull"]) {
+        isOtpVerification.value = true;
+        showSnakBar(response.data['message']);
+        if (isLoginScreen.value) {
+          await login();
+        } else {
+          ctx!.pushReplacement(RoutesConstants.createProfile);
+        }
       } else {
-        ctx!.pushReplacement(RoutesConstants.createProfile);
+        showSnakBar(response.data['message']);
       }
+    } catch (e) {
+      showSnakBar("Some error occurred at our end $e");
     }
     isOtpVerification.value = false;
   }
@@ -128,6 +152,9 @@ class AuthController extends GetxController {
         await cacheManager.setToken(response.data["user"]["accessToken"],
             response.data["user"]["refreshToken"]);
         showSnakBar(response.data['message']);
+        while (ctx!.canPop()) {
+          ctx!.pop();
+        }
 
         ctx!.pushReplacement(RoutesConstants.home);
       } else {
@@ -166,6 +193,9 @@ class AuthController extends GetxController {
         await cacheManager.setToken(response.data["user"]["accessToken"],
             response.data["user"]["refreshToken"]);
         getIt<PermissionPhone>().requestContactPermission();
+        while (ctx!.canPop()) {
+          ctx!.pop();
+        }
 
         ctx!.pushReplacement(RoutesConstants.home);
       } else {

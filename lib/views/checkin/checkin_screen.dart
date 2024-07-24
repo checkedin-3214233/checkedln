@@ -3,10 +3,13 @@ import 'package:checkedln/global_index.dart';
 import 'package:checkedln/views/checkin/create_checkin.dart';
 import 'package:checkedln/views/checkin/past_checkin_sceen.dart';
 import 'package:checkedln/views/checkin/upcoming_checkin_screen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../controller/checkin/create_checkin_controller.dart';
 import '../../controller/home_controller.dart';
 import '../../res/colors/routes/route_constant.dart';
 import '../widget_helper.dart';
@@ -24,6 +27,8 @@ class _CheckInScreenState extends State<CheckInScreen> {
       Get.isRegistered<CheckInController>()
           ? Get.find<CheckInController>()
           : Get.put(CheckInController());
+  final CreateCheckInController _createCheckInController =
+      Get.put(CreateCheckInController());
   @override
   void initState() {
     // TODO: implement initState
@@ -48,22 +53,70 @@ class _CheckInScreenState extends State<CheckInScreen> {
             },
             child: Icon(
               Icons.add,
-              color: Color(0xff050506),
+              color: Color(0xffFFFFFF),
             ),
-            backgroundColor: Color(0xffDDD8DF),
+            backgroundColor: Color(0xffBD57EA),
           ),
           appBar: mainAppBar(
               "Check-ins",
               [],
-              TabBar(
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorColor: Color(0xff000000),
-                  indicatorWeight: 2,
-                  tabs: [
-                    tabContainer("Upcoming Check-ins"),
-                    tabContainer("Past Check-ins")
-                  ]),
+              Column(
+                children: [
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                    child: TextField(
+                      controller: _checkInController.searchEvents,
+                      onChanged: (val) {
+                        _checkInController.search(val);
+                      },
+                      onEditingComplete: () {},
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
+                        hintText: 'Search',
+                        prefixIcon: Icon(Icons.search,
+                            color: Colors.grey), // Search icon
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0xFFDDD8DF), // Border color in hex
+                            width: 1.0, // Border width
+                          ),
+                          borderRadius: BorderRadius.circular(
+                              14.0), // Optional border radius
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(
+                                0xffDDD8DF), // Border color for focused state
+                            width: 1.0,
+                          ),
+                          borderRadius: BorderRadius.circular(14.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(
+                                0xffDDD8DF), // Border color for focused state
+                            width: 1.0,
+                          ),
+                          borderRadius: BorderRadius.circular(14.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TabBar(
+                      isScrollable: false,
+                      dragStartBehavior: DragStartBehavior.down,
+                      onTap: (value) {
+                        _checkInController.tab.value = value;
+                      },
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicatorColor: Color(0xff2E083F),
+                      indicatorWeight: 2,
+                      indicatorPadding: EdgeInsets.symmetric(vertical: 0),
+                      tabs: [tabContainer("Upcoming"), tabContainer("Past")]),
+                ],
+              ),
               true),
           body: SafeArea(
               child: TabBarView(

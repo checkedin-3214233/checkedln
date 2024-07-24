@@ -14,6 +14,27 @@ class CheckInServices {
   final String _shareLink = dotenv.env["SHARE_EVENT"]!;
   final String _getEventById = dotenv.env["GET_SHARED_EVENT"]!;
   final String _joinEvent = dotenv.env["JOIN_EVENT"]!;
+  final String _requestEvent = dotenv.env["REQUEST_EVENT"]!;
+  final String _acceptEvent = dotenv.env["ACCEPT_EVENT"]!;
+  final String _popularEvents = dotenv.env["POPULAR_EVENTS"]!;
+  final String _friendsCheckin = dotenv.env["FRIENDS_CHECKINS"]!;
+  final String _liveEvents = dotenv.env["LIVE_EVENTS"]!;
+  final String _changeStatus = dotenv.env["CHANGE_EVENT_STATUS"]!;
+  final String _joinEventThemSelf = dotenv.env["JOIN_EVENT_THEMSELF"]!;
+
+  changeStatus(String id, String status) async {
+    try {
+      Response response = await dioNetwork.getData(
+        "$_event$_changeStatus/$id/$status",
+      );
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
   getPastEvents() async {
     try {
       Response response = await dioNetwork.getData(_event + _pastEvent);
@@ -79,6 +100,58 @@ class CheckInServices {
     }
   }
 
+  getPopularEvents(double lat, double long) async {
+    print("getNearByEvents");
+    var data = {
+      "latitude": lat, // Example latitude
+      "longitude": long,
+      "maxDistance": 250000
+    };
+    try {
+      Response response =
+          await dioNetwork.postData(_event + _popularEvents, data: data);
+      print("Popular");
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  getFriendsCheckin() async {
+    print("getFriendsEvent");
+
+    try {
+      Response response = await dioNetwork.getData(_event + _friendsCheckin);
+      print("FriendsEvent");
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  getLiveEvents(double lat, double long) async {
+    print("getLiveEvents");
+    var data = {
+      "latitude": lat, // Example latitude
+      "longitude": long
+    };
+
+    try {
+      Response response =
+          await dioNetwork.postData(_event + _liveEvents, data: data);
+      print("LiveEvents");
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
   createEvent(
       String type,
       String bannerImages,
@@ -125,11 +198,62 @@ class CheckInServices {
     }
   }
 
-  joinEvent(String id) async {
+  joinEvent(String id, bool isShare) async {
     try {
       Response response = await dioNetwork.getData(
-        _event + _joinEvent + id,
+        "$_event${isShare ? _joinEvent : _joinEventThemSelf}$id",
       );
+      log("OM" + response.data.toString());
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  requestEvent(String id) async {
+    try {
+      Response response = await dioNetwork.getData(
+        "$_event$_requestEvent$id/requested",
+      );
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  acceptRequest(String userId, String eventId) async {
+    try {
+      Response response = await dioNetwork.getData(
+        "$_event$_acceptEvent/$eventId/$userId",
+      );
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  deleteEvent(String id) async {
+    try {
+      Response response = await dioNetwork.deleteData(
+        "$_event/$id",
+      );
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  updateEvent(String id, var body) async {
+    try {
+      Response response =
+          await dioNetwork.updateDate("$_event/$id", data: body);
       print(response);
       return response;
     } catch (e) {

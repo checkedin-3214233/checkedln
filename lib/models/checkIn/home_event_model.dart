@@ -5,8 +5,11 @@ part 'home_event_model.g.dart';
 @JsonSerializable()
 class HomeEventModel {
   HomeEventModel({
+    required this.interested,
+    required this.checkedIn,
     required this.id,
     required this.type,
+    required this.status,
     required this.bannerImages,
     required this.checkInName,
     required this.startDateTime,
@@ -22,12 +25,20 @@ class HomeEventModel {
     required this.v,
   });
 
+  final List<String>? interested;
+  static const String interestedKey = "interested";
+
+  final List<String>? checkedIn;
+  static const String checkedInKey = "checkedIn";
   @JsonKey(name: '_id')
   final String? id;
   static const String idKey = "_id";
 
   final String? type;
   static const String typeKey = "type";
+
+  final String? status;
+  static const String statusKey = "status";
 
   final String? bannerImages;
   static const String bannerImagesKey = "bannerImages";
@@ -65,15 +76,16 @@ class HomeEventModel {
   final DateTime? updatedAt;
   static const String updatedAtKey = "updatedAt";
 
-
   @JsonKey(name: '__v')
   final int? v;
   static const String vKey = "__v";
 
-
   HomeEventModel copyWith({
+    List<String>? interested,
+    List<String>? checkedIn,
     String? id,
     String? type,
+    String? status,
     String? bannerImages,
     String? checkInName,
     DateTime? startDateTime,
@@ -89,8 +101,11 @@ class HomeEventModel {
     int? v,
   }) {
     return HomeEventModel(
+      interested: interested ?? this.interested,
+      checkedIn: checkedIn ?? this.checkedIn,
       id: id ?? this.id,
       type: type ?? this.type,
+      status: status ?? this.status,
       bannerImages: bannerImages ?? this.bannerImages,
       checkInName: checkInName ?? this.checkInName,
       startDateTime: startDateTime ?? this.startDateTime,
@@ -107,13 +122,14 @@ class HomeEventModel {
     );
   }
 
-  factory HomeEventModel.fromJson(Map<String, dynamic> json) => _$HomeEventModelFromJson(json);
+  factory HomeEventModel.fromJson(Map<String, dynamic> json) =>
+      _$HomeEventModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$HomeEventModelToJson(this);
 
   @override
-  String toString(){
-    return "$id, $type, $bannerImages, $checkInName, $startDateTime, $endDateTime, $description, $createdBy, $attendies, $images, $location, $price, $createdAt, $updatedAt, $v, ";
+  String toString() {
+    return "$interested, $status, $checkedIn, $id, $type, $bannerImages, $checkInName, $startDateTime, $endDateTime, $description, $createdBy, $attendies, $images, $location, $price, $createdAt, $updatedAt, $v, ";
   }
 }
 
@@ -131,7 +147,6 @@ class Location {
   final Coordinates? coordinates;
   static const String coordinatesKey = "coordinates";
 
-
   @JsonKey(name: '_id')
   final String? id;
   static const String idKey = "_id";
@@ -145,11 +160,9 @@ class Location {
   final DateTime? updatedAt;
   static const String updatedAtKey = "updatedAt";
 
-
   @JsonKey(name: '__v')
   final int? v;
   static const String vKey = "__v";
-
 
   Location copyWith({
     Coordinates? coordinates,
@@ -169,12 +182,13 @@ class Location {
     );
   }
 
-  factory Location.fromJson(Map<String, dynamic> json) => _$LocationFromJson(json);
+  factory Location.fromJson(Map<String, dynamic> json) =>
+      _$LocationFromJson(json);
 
   Map<String, dynamic> toJson() => _$LocationToJson(this);
 
   @override
-  String toString(){
+  String toString() {
     return "$coordinates, $id, $address, $createdAt, $updatedAt, $v, ";
   }
 }
@@ -192,7 +206,6 @@ class Coordinates {
   final List<double>? coordinates;
   static const String coordinatesKey = "coordinates";
 
-
   Coordinates copyWith({
     String? type,
     List<double>? coordinates,
@@ -203,12 +216,13 @@ class Coordinates {
     );
   }
 
-  factory Coordinates.fromJson(Map<String, dynamic> json) => _$CoordinatesFromJson(json);
+  factory Coordinates.fromJson(Map<String, dynamic> json) =>
+      _$CoordinatesFromJson(json);
 
   Map<String, dynamic> toJson() => _$CoordinatesToJson(this);
 
   @override
-  String toString(){
+  String toString() {
     return "$type, $coordinates, ";
   }
 }

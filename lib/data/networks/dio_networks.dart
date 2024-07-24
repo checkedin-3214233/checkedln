@@ -63,6 +63,43 @@ class DioNetwork {
     }
   }
 
+  Future<dynamic> deleteData(String path) async {
+    _dio.interceptors.add(LogInterceptor(responseBody: true));
+    bool login = getIt<CacheManager>().getLoggedIn() == true ?? false;
+    if (login) {
+      _dio.interceptors.add(DioInterceptor());
+    }
+    try {
+      Response response = await _dio.delete(path);
+      return response;
+    } catch (err) {
+      log(err.toString());
+      if (err is SocketException) {
+        return await _errorHandling.manageErrors(_timeoutResponse());
+      } else {
+        return await _errorHandling.manageErrors(_errorResponse());
+      }
+    }
+  }
+
+  Future<dynamic> updateDate(String path, {Map<String, dynamic>? data}) {
+    _dio.interceptors.add(LogInterceptor(responseBody: true));
+    bool login = getIt<CacheManager>().getLoggedIn() == true ?? false;
+    if (login) {
+      _dio.interceptors.add(DioInterceptor());
+    }
+    try {
+      return _dio.patch(path, data: data);
+    } catch (err) {
+      log(err.toString());
+      if (err is SocketException) {
+        return _errorHandling.manageErrors(_timeoutResponse());
+      } else {
+        return _errorHandling.manageErrors(_errorResponse());
+      }
+    }
+  }
+
   Response _errorResponse() {
     return Response(
       data: {"success": false, "message": "Some Error Occurred At Our End"},

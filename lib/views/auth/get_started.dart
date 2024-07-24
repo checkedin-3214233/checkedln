@@ -91,7 +91,7 @@ class _GetStartedState extends State<GetStarted> {
                               .marginOnly(left: 3.w))
                     ]),
                 userName(_authController.userName, TextInputType.name,
-                    "User Name*", false),
+                    "User Name* (eg.rahul_122)", false),
                 userName(_authController.dateOfBirth, TextInputType.text,
                     "Date of Birth*", false),
                 Container(
@@ -141,7 +141,8 @@ class _GetStartedState extends State<GetStarted> {
                     ),
                   ),
                 ),
-                userName(_authController.bio, TextInputType.text, "Bio", false),
+                userName(_authController.bio, TextInputType.text,
+                    "Bio. (eg.Cool)", false),
                 Obx(() => _authController.isCreatingAccount.value
                     ? Center(
                         child: CircularProgressIndicator(),

@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:checkedln/controller/checkin/get_checkin_controller.dart';
 import 'package:checkedln/data/injection/dependency_injection.dart';
 import 'package:checkedln/data/local/cache_manager.dart';
 import 'package:checkedln/global.dart';
 import 'package:checkedln/models/checkIn/main_event_model.dart';
+import 'package:checkedln/res/snakbar.dart';
 import 'package:checkedln/views/profiles/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -50,14 +54,33 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                 _getCheckInController.eventModel!.value.status != "going" &&
                 !(_getCheckInController.eventModel!.value.event!.createdBy ==
                     getIt<CacheManager>().getUserId())
-            ? InkWell(
+            ? GestureDetector(
                 onTap: () async {
                   if (widget.isDeep &&
-                      await _getCheckInController.joinEvent(widget.shareId)) {
+                      await _getCheckInController.joinEvent(
+                          widget.shareId, true)) {
                     _getCheckInController.eventModel!.value = MainEventModel(
                         event: _getCheckInController.eventModel!.value.event,
                         status: "going");
                     _getCheckInController.update();
+                  } else if (_getCheckInController
+                          .eventModel!.value.event!.status ==
+                      "active") {
+                    bool isGoing = await _getCheckInController.joinEvent(
+                        _getCheckInController.eventModel!.value.event!.id!,
+                        false);
+                    if (isGoing) {
+                      _getCheckInController.eventModel!.value = MainEventModel(
+                          event: _getCheckInController.eventModel!.value.event,
+                          status: "going");
+                      _getCheckInController.update();
+                    }
+                  } else if (_getCheckInController.eventModel!.value.status !=
+                          "requested" &&
+                      _getCheckInController.eventModel!.value.event!.status ==
+                          "active") {
+                    _getCheckInController.requestEntry(
+                        _getCheckInController.eventModel!.value.event!.id!);
                   }
                 },
                 child: Container(
@@ -67,17 +90,24 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16.w.h),
-                      color: Color(
-                          _getCheckInController.eventModel!.value.status !=
+                      color: Color(_getCheckInController
+                                  .eventModel!.value.event!.status ==
+                              "inactive"
+                          ? 0xffDDD8DF
+                          : _getCheckInController.eventModel!.value.status !=
                                   "requested"
                               ? 0xffBD57EA
-                              : 0xffDDD8DF)),
+                              : 0xffBD57EA)),
                   child: Text(
-                    widget.isDeep
+                    widget.isDeep ||
+                            _getCheckInController
+                                    .eventModel!.value.event!.status ==
+                                "active"
                         ? "Join Event"
-                        : _getCheckInController.eventModel!.value.status !=
-                                "requested"
-                            ? "Request Entry"
+                        : _getCheckInController
+                                    .eventModel!.value.event!.status ==
+                                "inactive"
+                            ? "Registration Closed"
                             : "Pending",
                     style: TextStyle(
                         color: Colors.white,
@@ -94,14 +124,18 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                   Share.share(
                       'check out this new event in Checkdln https://checkedln-server.onrender.com${RoutesConstants.checkin}/${widget.id}/${widget.shareId}/${false}');
                 },
-                child: Image.asset("assets/images/share_bg.png")
+                child: SvgPicture.asset("assets/images/shareWvent.svg")
                     .marginOnly(right: 10.w))
           ],
           leading: InkWell(
               onTap: () {
                 ctx!.pop();
               },
-              child: Image.asset("assets/images/back_btn.webp")),
+              child: SvgPicture.asset(
+                "assets/images/backGreay.svg",
+                height: 2,
+                width: 2,
+              ).marginOnly(left: 10.w, top: 10.h, bottom: 10.h)),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -177,16 +211,16 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
                                                 children: [
-                                                  Image.asset(
-                                                    "assets/images/attending.png",
-                                                    width: 20.w,
-                                                    height: 20.h,
+                                                  SvgPicture.asset(
+                                                    "assets/images/peoplelive.svg",
+                                                    width: 10.w,
+                                                    height: 10.h,
                                                   ),
                                                   SizedBox(
                                                     width: 3.w,
                                                   ),
                                                   Text(
-                                                    "${_getCheckInController.eventModel!.value.event!.attendies!.length!} Attending",
+                                                    " ${(_getCheckInController.eventModel!.value.event!.startDateTime!.toLocal().compareTo(DateTime.now()) < 0 && _getCheckInController.eventModel!.value.event!.endDateTime!.toLocal().compareTo(DateTime.now()) > 0) ? "${_getCheckInController.eventModel!.value.event!.checkedIn!.length} are there in the event" : _getCheckInController.eventModel!.value.event!.startDateTime!.toLocal().compareTo(DateTime.now()) < 0 ? "${_getCheckInController.eventModel!.value.event!.attendies!.length} Attended" : "${_getCheckInController.eventModel!.value.event!.attendies!.length} Attendees"}",
                                                     style: TextStyle(
                                                         fontSize: 12.sp,
                                                         color:
@@ -275,6 +309,8 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                                   await launchUrl(
                                                       Uri.parse(googleUrl));
                                                 } else {
+                                                  showSnakBar(
+                                                      'Could not open the map.');
                                                   throw 'Could not open the map.';
                                                 }
                                               },
@@ -288,7 +324,9 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                                 style: TextStyle(
-                                                    color: Color(0xFF000000),
+                                                    fontStyle: FontStyle.italic,
+                                                    color: Color.fromARGB(
+                                                        255, 20, 60, 162),
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 14.sp),
                                               ),
@@ -350,8 +388,8 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                   ),
                                   twoTile(
                                       "${_getCheckInController.getMutuals(_getCheckInController.eventModel!.value.event!.attendies!, _userController.userModel.value!.buddies!)} Mutuals",
-                                      Image.asset(
-                                          "assets/images/attending.png"),
+                                      SvgPicture.asset(
+                                          "assets/images/peoplelive.svg"),
                                       () {},
                                       EdgeInsets.symmetric(
                                           vertical: 8.h, horizontal: 16.w)),
@@ -360,12 +398,15 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                   ),
                                   twoTile(
                                       "Event Gallery",
-                                      Image.asset(
-                                        "assets/images/gallery.png",
+                                      SvgPicture.asset(
+                                        "assets/images/eventGallery.svg",
                                         height: 15,
                                         width: 15,
-                                      ),
-                                      () {},
+                                      ), () {
+                                    ctx!.push(RoutesConstants.eventGallery,
+                                        extra: _getCheckInController
+                                            .eventModel!.value.event!.images);
+                                  },
                                       EdgeInsets.symmetric(
                                           vertical: 8.h, horizontal: 16.w))
                                 ],
@@ -408,8 +449,7 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                     ),
                                   ).paddingSymmetric(vertical: 10.h)
                                 : const SizedBox.shrink(),
-                            _getCheckInController.eventModel!.value.status ==
-                                        "going" ||
+                            _getCheckInController.eventModel!.value.status == "going" ||
                                     (_getCheckInController.eventModel!.value
                                             .event!.createdBy ==
                                         getIt<CacheManager>().getUserId())
@@ -417,243 +457,104 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                         shrinkWrap: true,
                                         physics: NeverScrollableScrollPhysics(),
                                         itemBuilder: (context, i) {
-                                          return InkWell(
-                                            onTap: () {
-                                              if (_getCheckInController
-                                                      .eventModel!
-                                                      .value
-                                                      .event!
-                                                      .attendies![i]
-                                                      .id ==
-                                                  getIt<CacheManager>()
-                                                      .getUserId()) {
-                                                ctx!.push(
-                                                    RoutesConstants.myProfile);
-                                              } else {
-                                                ctx!.push(
-                                                    "${RoutesConstants.userProfile}/${_getCheckInController.eventModel!.value.event!.attendies![i].id}");
-                                              }
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    ProfileAvatar(
-                                                        imageUrl:
-                                                            _getCheckInController
-                                                                .eventModel!
-                                                                .value
-                                                                .event!
-                                                                .attendies![i]
-                                                                .profileImageUrl!,
-                                                        size: 40,
-                                                        child: const SizedBox
-                                                            .shrink(),
-                                                        borderColor:
-                                                            Colors.white),
-                                                    SizedBox(
-                                                      width: 4.w,
-                                                    ),
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          _getCheckInController
-                                                              .eventModel!
-                                                              .value
-                                                              .event!
-                                                              .attendies![i]
-                                                              .name!,
-                                                          style: TextStyle(
-                                                              color: const Color(
-                                                                  0xFF050506),
-                                                              fontSize: 14.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                        ),
-                                                        i == 1 || i == 2
-                                                            ? Text(
-                                                                "2 Mututals",
-                                                                style: TextStyle(
-                                                                    color: const Color(
-                                                                        0xFF6A5C70),
-                                                                    fontSize:
-                                                                        12.sp,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600),
-                                                              )
-                                                            : SizedBox.shrink(),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      width: 4.w,
-                                                    ),
-                                                    _getCheckInController
-                                                                .eventModel!
-                                                                .value
-                                                                .event!
-                                                                .createdBy ==
-                                                            _getCheckInController
-                                                                .eventModel!
-                                                                .value
-                                                                .event!
-                                                                .attendies![i]
-                                                                .id
-                                                        ? Container(
-                                                            decoration: BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(4
-                                                                            .w
-                                                                            .h),
-                                                                color: Color(
-                                                                    0xFFE2CFFB)),
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                                    vertical:
-                                                                        2.h,
-                                                                    horizontal:
-                                                                        6.w),
-                                                            child: Text(
-                                                              "Host",
-                                                              style: TextStyle(
-                                                                  color: Color(
-                                                                      0xFF4111C1),
-                                                                  fontSize:
-                                                                      11.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600),
-                                                            ),
-                                                          )
-                                                        : SizedBox.shrink()
-                                                  ],
-                                                ),
-                                                _getCheckInController
-                                                            .eventModel!
-                                                            .value
-                                                            .event!
-                                                            .attendies![i]
-                                                            .id ==
-                                                        getIt<CacheManager>()
-                                                            .getUserId()
-                                                    ? Container(
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8.w.h),
-                                                            border: Border.all(
-                                                                color: Color(
-                                                                    0xFFAD2EE5))),
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                vertical: 8.h,
-                                                                horizontal:
-                                                                    16.w),
-                                                        child: Text(
-                                                          "You",
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xFFAD2EE5),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700,
-                                                              fontSize: 14.sp),
-                                                        ),
-                                                      )
-                                                    : !_userController.userModel
-                                                            .value!.buddies!
-                                                            .contains(
-                                                                _getCheckInController
-                                                                    .eventModel!
-                                                                    .value
-                                                                    .event!
-                                                                    .attendies![
-                                                                        i]
-                                                                    .id)
-                                                        ? GestureDetector(
-                                                            onTap: () {},
-                                                            child: Container(
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(8
-                                                                              .w
-                                                                              .h),
-                                                                  color: Color(
-                                                                      0xFFAD2EE5)),
-                                                              padding: EdgeInsets
-                                                                  .symmetric(
-                                                                      vertical:
-                                                                          8.h,
-                                                                      horizontal:
-                                                                          16.w),
-                                                              child: Text(
-                                                                "Catch-up",
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700,
-                                                                    fontSize:
-                                                                        14.sp),
-                                                              ),
-                                                            ),
-                                                          )
-                                                        : Container(
-                                                            decoration: BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(8
-                                                                            .w
-                                                                            .h),
-                                                                border: Border.all(
-                                                                    color: Color(
-                                                                        0xFFAD2EE5))),
-                                                            padding: EdgeInsets
-                                                                .symmetric(
-                                                                    vertical:
-                                                                        8.h,
-                                                                    horizontal:
-                                                                        16.w),
-                                                            child: Text(
-                                                              "Unfollow",
-                                                              style: TextStyle(
-                                                                  color: Color(
-                                                                      0xFFAD2EE5),
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700,
-                                                                  fontSize:
-                                                                      14.sp),
-                                                            ),
-                                                          )
-                                              ],
-                                            ),
-                                          );
+                                          return checkInUser(
+                                              (_getCheckInController
+                                                          .eventModel!
+                                                          .value
+                                                          .event!
+                                                          .startDateTime!
+                                                          .toLocal()
+                                                          .compareTo(
+                                                              DateTime.now()) <
+                                                      0 &&
+                                                  _getCheckInController
+                                                          .eventModel!
+                                                          .value
+                                                          .event!
+                                                          .endDateTime!
+                                                          .toLocal()
+                                                          .compareTo(
+                                                              DateTime.now()) >
+                                                      0),
+                                              i);
                                         },
                                         separatorBuilder: (context, i) {
                                           return Padding(
                                               padding: EdgeInsets.symmetric(
                                                   vertical: 5.h));
                                         },
-                                        itemCount: _getCheckInController
-                                            .eventModel!
-                                            .value
-                                            .event!
-                                            .attendies!
-                                            .length)
+                                        itemCount: (_getCheckInController
+                                                        .eventModel!
+                                                        .value
+                                                        .event!
+                                                        .startDateTime!
+                                                        .toLocal()
+                                                        .compareTo(
+                                                            DateTime.now()) <
+                                                    0 &&
+                                                _getCheckInController.eventModel!.value.event!.endDateTime!.toLocal().compareTo(DateTime.now()) >
+                                                    0)
+                                            ? _getCheckInController.eventModel!
+                                                .value.event!.checkedIn!.length
+                                            : _getCheckInController
+                                                        .eventModel!
+                                                        .value
+                                                        .event!
+                                                        .startDateTime!
+                                                        .toLocal()
+                                                        .compareTo(DateTime.now()) <
+                                                    0
+                                                ? _getCheckInController.eventModel!.value.event!.attendies!.length
+                                                : 1)
                                     .marginSymmetric(vertical: 5.h)
-                                : SizedBox.shrink()
+                                : SizedBox.shrink(),
+                            ((_getCheckInController.eventModel!.value.status ==
+                                            "going" ||
+                                        (_getCheckInController.eventModel!.value
+                                                .event!.createdBy ==
+                                            getIt<CacheManager>()
+                                                .getUserId())) &&
+                                    (!(_getCheckInController.eventModel!.value
+                                                    .event!.startDateTime!
+                                                    .toLocal()
+                                                    .compareTo(DateTime.now()) <
+                                                0 &&
+                                            _getCheckInController.eventModel!
+                                                    .value.event!.endDateTime!
+                                                    .toLocal()
+                                                    .compareTo(DateTime.now()) >
+                                                0) &&
+                                        !(_getCheckInController.eventModel!
+                                                .value.event!.endDateTime!
+                                                .toLocal()
+                                                .compareTo(DateTime.now()) <
+                                            0)))
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: 15.h,
+                                      ),
+                                      SvgPicture.asset(
+                                          "assets/images/viewUsers.svg"),
+                                      Text(
+                                        "Go to location to see all list of all attendees",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: 24.sp,
+                                            fontWeight: FontWeight.w700,
+                                            color: Color(0xff6A5C70)),
+                                      ),
+                                      SizedBox(
+                                        height: 15.h,
+                                      ),
+                                    ],
+                                  )
+                                : _getCheckInController.eventModel!.value.event!.endDateTime!.toLocal().compareTo(DateTime.now()) < 0
+                                    ? SizedBox.shrink()
+                                    : SizedBox.shrink()
                           ],
                         ).marginSymmetric(horizontal: 10.w),
             ),

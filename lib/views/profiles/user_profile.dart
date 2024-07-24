@@ -43,7 +43,7 @@ class _UserProfileState extends State<UserProfile> {
         body: SafeArea(
             child: Obx(() => SingleChildScrollView(
                   child: _userProfileController.isLoading.value
-                      ? Center(
+                      ? const Center(
                           child: CircularProgressIndicator(),
                         )
                       : Column(mainAxisSize: MainAxisSize.max, children: [

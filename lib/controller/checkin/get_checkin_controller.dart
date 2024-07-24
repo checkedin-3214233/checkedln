@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:checkedln/global_index.dart';
+import 'package:checkedln/res/snakbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio;
@@ -18,6 +21,19 @@ class GetCheckInController extends GetxController {
       MainEventModel eventModel = MainEventModel.fromJson(response.data);
       this.eventModel = eventModel.obs;
       update();
+    }
+    isLoading.value = false;
+  }
+
+  requestEntry(String checkInId) async {
+    isLoading.value = true;
+
+    dio.Response response = await _checkInServices.requestEvent(checkInId);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      eventModel!.value =
+          MainEventModel(event: eventModel!.value.event, status: "requested");
+      update();
+      print("object");
     }
     isLoading.value = false;
   }
@@ -46,16 +62,20 @@ class GetCheckInController extends GetxController {
 
   getList(List<UserModel> list) {}
 
-  joinEvent(String id) async {
-    dio.Response response = await _checkInServices.joinEvent(id);
+  joinEvent(String id, bool isShare) async {
+    isLoading.value = true;
+    dio.Response response = await _checkInServices.joinEvent(id, isShare);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final snackBar = SnackBar(
         content: Text(response.data["message"]),
       );
 
       ScaffoldMessenger.of(ctx!).showSnackBar(snackBar);
+      isLoading.value = false;
+
       return true;
     }
+    isLoading.value = false;
     return false;
   }
 }

@@ -23,9 +23,11 @@ class ChatController extends GetxController {
   var userList = [].obs;
   var messageList = [].obs;
   ChatServices _chatServices = ChatServices();
-  getChats() async {
+  Future getChats() async {
     isChatLoading.value = true;
     dio.Response response = await _chatServices.getChatList();
+    userList.clear();
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       List<UserChatModel> users = [];
       for (var user in response.data["allUsers"]) {

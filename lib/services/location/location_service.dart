@@ -4,7 +4,7 @@ import 'package:location/location.dart';
 
 import '../../controller/checkin/check_in_controller.dart';
 
-class LocationService{
+class LocationService {
   Location location = new Location();
   GeoCode geoCode = GeoCode();
 
@@ -12,8 +12,7 @@ class LocationService{
   PermissionStatus? _permissionGranted;
   LocationData? _locationData;
 
-
-  checkLocation()async{
+  checkLocation() async {
     _serviceEnabled = await location.serviceEnabled();
     if (!_serviceEnabled!) {
       _serviceEnabled = await location.requestService();
@@ -23,7 +22,7 @@ class LocationService{
     }
   }
 
-  getLocation()async{
+  getLocation() async {
     _permissionGranted = await location.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
@@ -33,38 +32,39 @@ class LocationService{
     }
 
     _locationData = await location.getLocation();
-    Get.find<CheckInController>().getNearByEvents(_locationData!.latitude!,_locationData!.longitude!);
+    Get.find<CheckInController>()
+        .getNearByEvents(_locationData!.latitude!, _locationData!.longitude!);
+    Get.find<CheckInController>()
+        .getPopularEvents(_locationData!.latitude!, _locationData!.longitude!);
+    Get.find<CheckInController>()
+        .postLiveEvents(_locationData!.latitude!, _locationData!.longitude!);
 
     print(_locationData);
 
     //getLocationContinous();
   }
 
-getLocationContinous(){
-  location.onLocationChanged.listen((LocationData currentLocation) {
-    // Use current location
-    Get.find<CheckInController>().getNearByEvents(currentLocation.latitude!,currentLocation.longitude!);
-
-  });
-}
-
-getNearbyEvents(){
-
-}
-
-getCoordinates(String address)async{
-  try {
-    Coordinates coordinates = await geoCode.forwardGeocoding(
-        address:address);
-
-    print("Latitude: ${coordinates.latitude}");
-    print("Longitude: ${coordinates.longitude}");
-    return coordinates;
-  } catch (e) {
-    print(e);
-    return null;
+  getLocationContinous() {
+    location.onLocationChanged.listen((LocationData currentLocation) {
+      // Use current location
+      Get.find<CheckInController>().getNearByEvents(
+          currentLocation.latitude!, currentLocation.longitude!);
+    });
   }
 
-}
+  getNearbyEvents() {}
 
+  getCoordinates(String address) async {
+    try {
+      Coordinates coordinates =
+          await geoCode.forwardGeocoding(address: address);
+
+      print("Latitude: ${coordinates.latitude}");
+      print("Longitude: ${coordinates.longitude}");
+      return coordinates;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
 }

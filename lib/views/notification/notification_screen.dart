@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:checkedln/controller/notification_controller.dart';
+import 'package:checkedln/global.dart';
 import 'package:checkedln/views/profiles/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../checkin/checkin_info.dart';
 import '../widget_helper.dart';
@@ -30,23 +32,31 @@ class _NotificationScreenState extends State<NotificationScreen> {
               itemBuilder: (context, i) {
                 Map<String, dynamic> data = json.decode(_notifiacationController
                     .notificationList[i].notificationData!);
-                log(data.toString());
+                log("Krish" + data.toString());
                 return ListTile(
                   subtitle: Row(
                     children: [
-                      Container(
-                        child: Text(
-                          "Accept",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w700),
+                      InkWell(
+                        onTap: () {
+                          _notifiacationController.acceptInvite(
+                              _notifiacationController
+                                  .notificationList[i].fromUser!.id!,
+                              data["event"]["_id"]);
+                        },
+                        child: Container(
+                          child: Text(
+                            "Accept",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 8.h),
+                          decoration: BoxDecoration(
+                              color: Color(0xffAD2EE5),
+                              borderRadius: BorderRadius.circular(8)),
                         ),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8.w, vertical: 8.h),
-                        decoration: BoxDecoration(
-                            color: Color(0xffAD2EE5),
-                            borderRadius: BorderRadius.circular(8)),
                       ),
                       SizedBox(
                         width: 20.w,
@@ -69,12 +79,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                   trailing: InkWell(
                     onTap: () {
-                      // Get.to(
-                      //   () => CheckInfoScreen(
-                      //     id: data["event"]["_id"],
-                      //     isDeep: false,
-                      //   ),
-                      // );
+                      // ctx!.push(CheckInInfo(
+                      //   eventId: data["event"]["_id"],
+                      //   checkInId: data["event"]["checkInId"],
+                      // ));
                     },
                     child: Image.network(
                       data["event"]["bannerImages"],
@@ -111,7 +119,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 color: Color(0xff050506))),
                         TextSpan(
                             text:
-                                "wants to join your event ${data["event"]["checkInName"]} ${formatDateDifference(DateTime(2023, 10, 10, 10, 10, 10))}",
+                                "wants to join your event ${data["event"]["checkInName"]} ${formatDateDifference(_notifiacationController.notificationList[i].createdAt!)}",
                             style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: Color(0xFF85738C),

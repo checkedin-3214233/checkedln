@@ -23,9 +23,6 @@ Widget shareButton(Icon icon, Function() onPressed) {
       width: 40.w,
       height: 40.h,
       child: icon,
-      decoration: BoxDecoration(
-          color: Color(0xffEBE9EC),
-          borderRadius: BorderRadius.circular(10.w.h)),
     ),
   );
 }

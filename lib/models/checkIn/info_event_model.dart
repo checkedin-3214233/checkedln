@@ -10,6 +10,7 @@ class InfoEventModel {
   InfoEventModel({
     required this.id,
     required this.type,
+    required this.status,
     required this.bannerImages,
     required this.checkInName,
     required this.startDateTime,
@@ -22,6 +23,8 @@ class InfoEventModel {
     required this.price,
     required this.createdAt,
     required this.updatedAt,
+    required this.checkedIn,
+    required this.interested,
     required this.v,
   });
 
@@ -31,6 +34,9 @@ class InfoEventModel {
 
   final String? type;
   static const String typeKey = "type";
+
+  final String? status;
+  static const String statusKey = "status";
 
   final String? bannerImages;
   static const String bannerImagesKey = "bannerImages";
@@ -53,6 +59,12 @@ class InfoEventModel {
   final List<UserModel>? attendies;
   static const String attendiesKey = "attendies";
 
+  final List<UserModel>? checkedIn;
+  static const String checkedInKey = "checkedIn";
+
+  final List<UserModel>? interested;
+  static const String interestedKey = "interested";
+
   final List<String>? images;
   static const String imagesKey = "images";
 
@@ -68,15 +80,14 @@ class InfoEventModel {
   final DateTime? updatedAt;
   static const String updatedAtKey = "updatedAt";
 
-
   @JsonKey(name: '__v')
   final int? v;
   static const String vKey = "__v";
 
-
   InfoEventModel copyWith({
     String? id,
     String? type,
+    String? status,
     String? bannerImages,
     String? checkInName,
     DateTime? startDateTime,
@@ -84,6 +95,8 @@ class InfoEventModel {
     String? description,
     String? createdBy,
     List<UserModel>? attendies,
+    List<UserModel>? checkedIn,
+    List<UserModel>? interested,
     List<String>? images,
     LocationModel? location,
     int? price,
@@ -94,6 +107,7 @@ class InfoEventModel {
     return InfoEventModel(
       id: id ?? this.id,
       type: type ?? this.type,
+      status: status ?? this.status,
       bannerImages: bannerImages ?? this.bannerImages,
       checkInName: checkInName ?? this.checkInName,
       startDateTime: startDateTime ?? this.startDateTime,
@@ -103,6 +117,8 @@ class InfoEventModel {
       attendies: attendies ?? this.attendies,
       images: images ?? this.images,
       location: location ?? this.location,
+      checkedIn: checkedIn ?? this.checkedIn,
+      interested: interested ?? this.interested,
       price: price ?? this.price,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -110,13 +126,13 @@ class InfoEventModel {
     );
   }
 
-  factory InfoEventModel.fromJson(Map<String, dynamic> json) => _$InfoEventModelFromJson(json);
+  factory InfoEventModel.fromJson(Map<String, dynamic> json) =>
+      _$InfoEventModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$InfoEventModelToJson(this);
 
   @override
-  String toString(){
-    return "$id, $type, $bannerImages, $checkInName, $startDateTime, $endDateTime, $description, $createdBy, $attendies, $images, $location, $price, $createdAt, $updatedAt, $v, ";
+  String toString() {
+    return "$id, $type, $status, $bannerImages, $checkInName, $startDateTime, $endDateTime, $description, $createdBy, $attendies, $checkedIn, $interested, $images, $location, $price, $createdAt, $updatedAt, $v, ";
   }
 }
-

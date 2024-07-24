@@ -10,6 +10,7 @@ InfoEventModel _$InfoEventModelFromJson(Map<String, dynamic> json) =>
     InfoEventModel(
       id: json['_id'] as String?,
       type: json['type'] as String?,
+      status: json['status'] as String?,
       bannerImages: json['bannerImages'] as String?,
       checkInName: json['checkInName'] as String?,
       startDateTime: json['startDateTime'] == null
@@ -35,6 +36,12 @@ InfoEventModel _$InfoEventModelFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      checkedIn: (json['checkedIn'] as List<dynamic>?)
+          ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      interested: (json['interested'] as List<dynamic>?)
+          ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
       v: json['__v'] as int?,
     );
 
@@ -42,6 +49,7 @@ Map<String, dynamic> _$InfoEventModelToJson(InfoEventModel instance) =>
     <String, dynamic>{
       '_id': instance.id,
       'type': instance.type,
+      'status': instance.status,
       'bannerImages': instance.bannerImages,
       'checkInName': instance.checkInName,
       'startDateTime': instance.startDateTime?.toIso8601String(),
@@ -49,6 +57,8 @@ Map<String, dynamic> _$InfoEventModelToJson(InfoEventModel instance) =>
       'description': instance.description,
       'createdBy': instance.createdBy,
       'attendies': instance.attendies,
+      'checkedIn': instance.checkedIn,
+      'interested': instance.interested,
       'images': instance.images,
       'location': instance.location,
       'price': instance.price,

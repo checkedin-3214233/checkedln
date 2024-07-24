@@ -14,6 +14,8 @@ class AuthServices {
   final String _register = dotenv.env['REGISTER']!;
   final String _checkUser = dotenv.env['CHECK_USER']!;
   final String _login = dotenv.env['LOGIN']!;
+  final String _sendOtp = dotenv.env['SEND_OTP']!;
+  final String _verifyOtp = dotenv.env['VERIFY_OTP']!;
 
   Future<dynamic> checkUser(String number) async {
     log(_auth + _checkUser);
@@ -21,6 +23,30 @@ class AuthServices {
     try {
       Response response =
           await dioNetwork.postData(_auth + _checkUser, data: data);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  Future<dynamic> sendOtp(String number) async {
+    Map<String, String> data = {"number": number};
+    try {
+      Response response =
+          await dioNetwork.postData(_auth + _sendOtp, data: data);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  Future<dynamic> verifyOtp(String number, String otp) async {
+    Map<String, String> data = {"number": number, "otp": otp};
+    try {
+      Response response =
+          await dioNetwork.postData(_auth + _verifyOtp, data: data);
       return response;
     } catch (e) {
       log(e.toString());

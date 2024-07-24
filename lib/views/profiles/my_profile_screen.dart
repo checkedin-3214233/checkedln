@@ -1,12 +1,16 @@
+import 'package:checkedln/global.dart';
 import 'package:checkedln/views/profiles/profile_avatar.dart';
 import 'package:checkedln/views/profiles/profile_widget_helper.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../controller/home_controller.dart';
 import '../../controller/user_controller.dart';
+import '../../res/colors/routes/route_constant.dart';
 import '../checkin/past_checkin_sceen.dart';
 import '../widget_helper.dart';
 import 'edit_profile_screen.dart';
@@ -41,7 +45,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             child: SingleChildScrollView(
                 child: Obx(
               () => _userController.isLoading.value
-                  ? Center(
+                  ? const Center(
                       child: CircularProgressIndicator(),
                     )
                   : Column(mainAxisSize: MainAxisSize.max, children: [
@@ -49,6 +53,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           ? Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 10.w, vertical: 15.h),
+                              height: 272,
+                              width: MediaQuery.of(context).size.width,
+                              decoration: const BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: AssetImage(
+                                          "assets/images/bgProfile.png"))),
                               child: Column(
                                 children: [
                                   Row(
@@ -57,19 +68,19 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                     children: [
                                       backButton(
                                           Icon(Icons.arrow_back_ios_rounded),
-                                          () {}),
-                                      backButton(Icon(Icons.settings), () {}),
+                                          () {
+                                        Get.find<HomeController>()
+                                            .currentBottomIndex
+                                            .value = 0;
+                                        Get.find<HomeController>().update();
+                                      }),
+                                      backButton(Icon(Icons.settings), () {
+                                        ctx!.push(RoutesConstants.settings);
+                                      }),
                                     ],
                                   ),
                                 ],
                               ),
-                              height: 272,
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage(
-                                          "assets/images/bgProfile.png"))),
                             )
                           : SizedBox.shrink(),
                       _userController.userModel.value!.userImages!.isNotEmpty
@@ -100,6 +111,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               child: Container(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 10.w, vertical: 15.h),
+                                height: 272,
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(_userController
+                                                .userModel.value!.userImages![
+                                            _userController
+                                                .currentImageCount.value]))),
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -111,8 +131,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       children: [
                                         backButton(
                                             Icon(Icons.arrow_back_ios_rounded),
-                                            () {}),
-                                        backButton(Icon(Icons.settings), () {}),
+                                            () {
+                                          Get.find<HomeController>()
+                                              .currentBottomIndex
+                                              .value = 0;
+                                          Get.find<HomeController>().update();
+                                        }),
+                                        backButton(Icon(Icons.settings), () {
+                                          ctx!.push(RoutesConstants.settings);
+                                        }),
                                       ],
                                     ),
                                     Column(
@@ -125,14 +152,14 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                           width: 30.w,
                                           height: 30.h,
                                           alignment: Alignment.center,
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: Color(0xffEBE9EC),
                                           ),
                                           child: Image.asset(
                                               "assets/images/edit.png"),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 10,
                                         ),
                                         DotsIndicator(
@@ -144,25 +171,17 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                             size: Size(6.w, 6.h),
                                             color:
                                                 Colors.white, // Inactive color
-                                            activeColor: Color(0xffAD2EE5),
+                                            activeColor:
+                                                const Color(0xffAD2EE5),
                                           ),
                                         )
                                       ],
                                     )
                                   ],
                                 ),
-                                height: 272,
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(_userController
-                                                .userModel.value!.userImages![
-                                            _userController
-                                                .currentImageCount.value]))),
                               ),
                             )
-                          : SizedBox.shrink(),
+                          : const SizedBox.shrink(),
                       Container(
                         padding: EdgeInsets.symmetric(
                             horizontal: 16.w, vertical: 2.h),
@@ -180,20 +199,16 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                     child: ProfileAvatar(
                                       imageUrl: _userController.userModel.value!
                                               .profileImageUrl!.isEmpty
-                                          ? "https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg"
+                                          ? _userController.userModel.value!
+                                                      .gender ==
+                                                  "male"
+                                              ? "https://userallimages.s3.amazonaws.com/male.png"
+                                              : "https://userallimages.s3.amazonaws.com/female.png"
                                           : _userController.userModel.value!
                                               .profileImageUrl!,
                                       size: 107,
-                                      child: Container(
-                                        padding: EdgeInsets.all(6.0),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Color(0xffEBE9EC),
-                                        ),
-                                        child: Image.asset(
-                                            "assets/images/edit.png"),
-                                      ),
                                       borderColor: Colors.white,
+                                      child: SizedBox.shrink(),
                                     ),
                                   ),
                                   textColumn(
@@ -203,7 +218,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       "Buddies"),
                                   textColumn("0", "Checkins"),
                                   shareButton(
-                                      Icon(Icons.share_outlined), () => null)
+                                      Icon(Icons.share_outlined),
+                                      () => Share.share(
+                                          "https://checkedln-server.onrender.com" +
+                                              RoutesConstants.userProfile +
+                                              "/${_userController.userModel.value!.id!}"))
                                 ],
                               ),
                             ),
@@ -212,7 +231,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
                               child: Text(
                                 _userController.userModel.value!.name!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.w800, fontSize: 20),
                                 textAlign: TextAlign.start,
                               ),
@@ -222,7 +241,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
 
                               child: Text(
                                 _userController.userModel.value!.userName!,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 14,
                                     color: Color(0xff6A5C70)),
@@ -230,7 +249,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               ),
                             ),
                             Transform.translate(
-                              offset: Offset(0.0, -5.0), //
+                              offset: const Offset(0.0, -5.0), //
                               child: Text(
                                 _userController.userModel.value!.bio!,
                                 style: TextStyle(
@@ -240,9 +259,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               ),
                             ),
                             Transform.translate(
-                              offset: Offset(0.0, -10.0), //
+                              offset: const Offset(0.0, -10.0), //
                               child: button(
-                                  Color(0xffEBE9EC),
+                                  const Color(0xffEBE9EC),
                                   Text(
                                     "Edit Profile",
                                     style: TextStyle(
@@ -250,13 +269,14 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                         fontWeight: FontWeight.w700,
                                         color: Color(0xff4A404F)),
                                   ), () {
-                                Get.to(() => EditProfileScreen());
+                                ctx!.push(RoutesConstants.editProfile);
                               }),
                             ),
                             TabBar(
-                                padding: EdgeInsets.symmetric(vertical: 15),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
                                 indicatorSize: TabBarIndicatorSize.tab,
-                                indicatorColor: Color(0xff000000),
+                                indicatorColor: const Color(0xff000000),
                                 indicatorWeight: 2,
                                 tabs: [
                                   tabContainer("Post"),
@@ -264,7 +284,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 ]),
                             SizedBox(
                                 height: 500.h,
-                                child: TabBarView(
+                                child: const TabBarView(
                                   children: [
                                     MyPostScreen(),
                                     PastCheckInScreen(),

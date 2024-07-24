@@ -3,6 +3,7 @@ import 'package:checkedln/global_index.dart';
 import 'package:checkedln/views/chats/chat_widget_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,10 +38,10 @@ class _ChatScreenState extends State<ChatScreen> {
         appBar: mainAppBar(
             "My Chats",
             [
-              Image.asset(
-                "assets/images/search.png",
-                height: 40.h,
-                width: 40.w,
+              SvgPicture.asset(
+                "assets/images/search.svg",
+                height: 20.h,
+                width: 20.w,
               ).marginOnly(right: 10.w),
             ],
             SizedBox.shrink(),

@@ -3,8 +3,11 @@ import 'dart:developer';
 import 'package:checkedln/data/injection/dependency_injection.dart';
 import 'package:checkedln/global.dart';
 import 'package:checkedln/models/user/userModel.dart';
+import 'package:checkedln/services/Permission/permission_phone.dart';
 import 'package:checkedln/views/auth/signup.dart';
+import 'package:checkedln/views/profiles/edit_profile_screen.dart';
 import 'package:checkedln/views/profiles/my_profile_screen.dart';
+import 'package:checkedln/views/settings/setting_page.dart';
 import 'package:checkedln/views/splash/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +18,8 @@ import '../../../data/local/cache_manager.dart';
 import '../../../views/auth/authentication_screen.dart';
 import '../../../views/auth/make_your_profile_pop.dart';
 import '../../../views/chats/user_chat_screen.dart';
+import '../../../views/gallery/event_gallery.dart';
+import '../../../views/home/story_view.dart';
 import '../../../views/profiles/user_profile.dart';
 import 'route_constant.dart';
 import '../../../views/auth/get_started.dart';
@@ -151,6 +156,24 @@ class RoutesGenerator {
             },
           ),
           GoRoute(
+            path: RoutesConstants.editProfile,
+            builder: (BuildContext context, GoRouterState state) {
+              return const EditProfileScreen();
+            },
+          ),
+          GoRoute(
+            path: RoutesConstants.userStroies,
+            builder: (BuildContext context, GoRouterState state) {
+              log("Story" + state.extra.toString());
+              List<String?> list = state.extra as List<String?>;
+              log("Story" + list.toString());
+
+              return MoreStories(
+                imageList: list,
+              );
+            },
+          ),
+          GoRoute(
             path: RoutesConstants.myProfile,
             builder: (BuildContext context, GoRouterState state) {
               return const MyProfileScreen();
@@ -179,6 +202,22 @@ class RoutesGenerator {
             builder: (BuildContext context, GoRouterState state) {
               return UserProfile(
                 userId: state.pathParameters['id']!,
+              );
+            },
+          ),
+          GoRoute(
+            path: "${RoutesConstants.settings}",
+            builder: (BuildContext context, GoRouterState state) {
+              return SettingPage();
+            },
+          ),
+          GoRoute(
+            path: "${RoutesConstants.eventGallery}",
+            builder: (BuildContext context, GoRouterState state) {
+              List<String> list = state.extra as List<String>;
+              log("Krish$list");
+              return EventGallery(
+                images: list,
               );
             },
           ),
@@ -277,6 +316,8 @@ class RoutesGenerator {
       return RoutesConstants.onboarding;
     } else if (loggedIn) {
       print("object2");
+      getIt<PermissionPhone>().requestContactPermission();
+
       return RoutesConstants.home;
     } else if (loggedIn && isHomeRoute) {
       print("object");

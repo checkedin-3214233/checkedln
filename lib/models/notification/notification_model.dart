@@ -10,6 +10,7 @@ class NotificationModel {
     required this.notificationData,
     required this.fromUser,
     required this.type,
+    required this.createdAt,
     required this.id,
   });
 
@@ -22,6 +23,9 @@ class NotificationModel {
   final String? type;
   static const String typeKey = "type";
 
+  final DateTime? createdAt;
+  static const String createdAtKey = "createdAt";
+
   @JsonKey(name: '_id')
   final String? id;
   static const String idKey = "_id";
@@ -30,12 +34,14 @@ class NotificationModel {
     String? notificationData,
     UserModel? fromUser,
     String? type,
+    DateTime? createdAt,
     String? id,
   }) {
     return NotificationModel(
       notificationData: notificationData ?? this.notificationData,
       fromUser: fromUser ?? this.fromUser,
       type: type ?? this.type,
+      createdAt: createdAt ?? this.createdAt,
       id: id ?? this.id,
     );
   }
@@ -47,6 +53,6 @@ class NotificationModel {
 
   @override
   String toString() {
-    return "$notificationData, $fromUser, $type, $id, ";
+    return "$notificationData, $fromUser, $type, $id, $createdAt";
   }
 }

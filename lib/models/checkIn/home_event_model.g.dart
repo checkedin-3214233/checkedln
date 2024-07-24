@@ -8,8 +8,15 @@ part of 'home_event_model.dart';
 
 HomeEventModel _$HomeEventModelFromJson(Map<String, dynamic> json) =>
     HomeEventModel(
+      interested: (json['interested'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      checkedIn: (json['checkedIn'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       id: json['_id'] as String?,
       type: json['type'] as String?,
+      status: json['status'] as String?,
       bannerImages: json['bannerImages'] as String?,
       checkInName: json['checkInName'] as String?,
       startDateTime: json['startDateTime'] == null
@@ -40,8 +47,11 @@ HomeEventModel _$HomeEventModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$HomeEventModelToJson(HomeEventModel instance) =>
     <String, dynamic>{
+      'interested': instance.interested,
+      'checkedIn': instance.checkedIn,
       '_id': instance.id,
       'type': instance.type,
+      'status': instance.status,
       'bannerImages': instance.bannerImages,
       'checkInName': instance.checkInName,
       'startDateTime': instance.startDateTime?.toIso8601String(),

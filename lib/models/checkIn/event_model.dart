@@ -1,11 +1,14 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../location/location_model.dart';
+
 part 'event_model.g.dart';
 
 @JsonSerializable()
 class EventModel {
   EventModel({
     required this.type,
+    required this.status,
     required this.bannerImages,
     required this.checkInName,
     required this.startDateTime,
@@ -24,6 +27,9 @@ class EventModel {
   final String? type;
   static const String typeKey = "type";
 
+  final String? status;
+  static const String statusKey = "status";
+
   final String? bannerImages;
   static const String bannerImagesKey = "bannerImages";
 
@@ -36,7 +42,7 @@ class EventModel {
   final DateTime? endDateTime;
   static const String endDateTimeKey = "endDateTime";
 
-  final String? location;
+  final LocationModel? location;
   static const String locationKey = "location";
 
   final String? description;
@@ -51,7 +57,6 @@ class EventModel {
   final List<String>? images;
   static const String imagesKey = "images";
 
-
   @JsonKey(name: '_id')
   final String? id;
   static const String idKey = "_id";
@@ -62,19 +67,18 @@ class EventModel {
   final DateTime? updatedAt;
   static const String updatedAtKey = "updatedAt";
 
-
   @JsonKey(name: '__v')
   final int? v;
   static const String vKey = "__v";
 
-
   EventModel copyWith({
     String? type,
+    String? status,
     String? bannerImages,
     String? checkInName,
     DateTime? startDateTime,
     DateTime? endDateTime,
-    String? location,
+    LocationModel? location,
     String? description,
     String? createdBy,
     List<String>? attendies,
@@ -86,6 +90,7 @@ class EventModel {
   }) {
     return EventModel(
       type: type ?? this.type,
+      status: status ?? this.status,
       bannerImages: bannerImages ?? this.bannerImages,
       checkInName: checkInName ?? this.checkInName,
       startDateTime: startDateTime ?? this.startDateTime,
@@ -102,12 +107,13 @@ class EventModel {
     );
   }
 
-  factory EventModel.fromJson(Map<String, dynamic> json) => _$EventModelFromJson(json);
+  factory EventModel.fromJson(Map<String, dynamic> json) =>
+      _$EventModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$EventModelToJson(this);
 
   @override
-  String toString(){
-    return "$type, $bannerImages, $checkInName, $startDateTime, $endDateTime, $location, $description, $createdBy, $attendies, $images, $id, $createdAt, $updatedAt, $v, ";
+  String toString() {
+    return "$type, $status, $bannerImages, $checkInName, $startDateTime, $endDateTime, $location, $description, $createdBy, $attendies, $images, $id, $createdAt, $updatedAt, $v, ";
   }
 }

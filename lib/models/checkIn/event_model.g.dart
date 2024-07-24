@@ -8,6 +8,7 @@ part of 'event_model.dart';
 
 EventModel _$EventModelFromJson(Map<String, dynamic> json) => EventModel(
       type: json['type'] as String?,
+      status: json['status'] as String?,
       bannerImages: json['bannerImages'] as String?,
       checkInName: json['checkInName'] as String?,
       startDateTime: json['startDateTime'] == null
@@ -16,7 +17,9 @@ EventModel _$EventModelFromJson(Map<String, dynamic> json) => EventModel(
       endDateTime: json['endDateTime'] == null
           ? null
           : DateTime.parse(json['endDateTime'] as String),
-      location: json['location'] as String?,
+      location: json['location'] == null
+          ? null
+          : LocationModel.fromJson(json['location'] as Map<String, dynamic>),
       description: json['description'] as String?,
       createdBy: json['createdBy'] as String?,
       attendies: (json['attendies'] as List<dynamic>?)
@@ -37,6 +40,7 @@ EventModel _$EventModelFromJson(Map<String, dynamic> json) => EventModel(
 Map<String, dynamic> _$EventModelToJson(EventModel instance) =>
     <String, dynamic>{
       'type': instance.type,
+      'status': instance.status,
       'bannerImages': instance.bannerImages,
       'checkInName': instance.checkInName,
       'startDateTime': instance.startDateTime?.toIso8601String(),

@@ -14,12 +14,13 @@ class RoutesConstants {
 
   static const authHelper = '/auth-helper';
 
+  static const eventGallery = '/event-gallery';
   // Main App Screens
   static const home = '/';
   static const search = '/search';
   static const notification = '/notification';
   static const user = '/user';
-
+  static const userStroies = '/user-stroies';
   static const userProfile = '/user-profile';
 
   static const checkin = '/checkin';
@@ -34,4 +35,7 @@ class RoutesConstants {
 
   // Miscellaneous Screens
   static const utility = '/utility';
+
+  static const settings = '/settings';
+  static const editProfile = '/edit-profile';
 }

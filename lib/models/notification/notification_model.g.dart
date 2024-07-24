@@ -13,6 +13,9 @@ NotificationModel _$NotificationModelFromJson(Map<String, dynamic> json) =>
           ? null
           : UserModel.fromJson(json['fromUser'] as Map<String, dynamic>),
       type: json['type'] as String?,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
       id: json['_id'] as String?,
     );
 
@@ -21,5 +24,6 @@ Map<String, dynamic> _$NotificationModelToJson(NotificationModel instance) =>
       'notificationData': instance.notificationData,
       'fromUser': instance.fromUser,
       'type': instance.type,
+      'createdAt': instance.createdAt?.toIso8601String(),
       '_id': instance.id,
     };

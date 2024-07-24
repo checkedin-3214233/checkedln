@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:checkedln/global.dart';
 import 'package:checkedln/res/snakbar.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:checkedln/models/user/userModel.dart';
 import 'package:checkedln/services/user/userServices.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../services/upload_image.dart';
 
@@ -49,7 +51,7 @@ class UserController extends GetxController {
     }
   }
 
-  getUser() async {
+  Future getUser() async {
     isLoading.value = true;
     try {
       dio.Response response = await _userServices.getUser();
@@ -91,7 +93,7 @@ class UserController extends GetxController {
         bio.text = userModel.value!.bio!;
         profileUrl.value = userModel.value!.profileImageUrl!;
         isLoading.value = false;
-        Get.back();
+        ctx!.pop();
       } else {}
     } catch (e) {
       showSnakBar("Some error occurred at our end $e");

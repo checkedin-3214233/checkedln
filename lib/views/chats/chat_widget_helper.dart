@@ -4,6 +4,7 @@ import 'package:checkedln/models/userChat/userChatModel.dart';
 import 'package:checkedln/views/profiles/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -127,65 +128,71 @@ AppBar userChatAppBar(String userId, String userName, String profileImageUrl) {
     backgroundColor: Color(0xffF3F3F3),
     elevation: 0,
     centerTitle: true,
-    title: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ProfileAvatar(
-          imageUrl: profileImageUrl ?? "https://via.placeholder.com/150",
-          size: 48,
-          child: StreamBuilder(
-              stream: getIt<SocketServices>().onlineUserStream,
-              builder: (context, snapshot) {
-                print(snapshot.data);
-
-                if (snapshot.hasData) {
-                  List<dynamic> onlineUsers = snapshot.data as List<dynamic>;
-                  return onlineUsers.contains(userId)
-                      ? Container(
-                          padding: EdgeInsets.all(6.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xff0FE16D),
-                          ),
-                        )
-                      : SizedBox.shrink();
-                }
-                return SizedBox.shrink();
-              }),
-          borderColor: Colors.white,
-        ).marginOnly(right: 10.w),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              userName ?? "",
-              style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xff050506)),
-            ),
-            StreamBuilder(
+    title: GestureDetector(
+      onTap: () {
+        ctx!.push("${RoutesConstants.userProfile}/${userId}");
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          ProfileAvatar(
+            imageUrl: profileImageUrl ?? "https://via.placeholder.com/150",
+            size: 48,
+            child: StreamBuilder(
                 stream: getIt<SocketServices>().onlineUserStream,
                 builder: (context, snapshot) {
+                  print(snapshot.data);
+
                   if (snapshot.hasData) {
                     List<dynamic> onlineUsers = snapshot.data as List<dynamic>;
                     return onlineUsers.contains(userId)
-                        ? Text(
-                            "Active Now",
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xff6A5C70),
+                        ? Container(
+                            padding: EdgeInsets.all(6.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xff0FE16D),
                             ),
                           )
                         : SizedBox.shrink();
                   }
                   return SizedBox.shrink();
                 }),
-          ],
-        )
-      ],
+            borderColor: Colors.white,
+          ).marginOnly(right: 10.w),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                userName ?? "",
+                style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xff050506)),
+              ),
+              StreamBuilder(
+                  stream: getIt<SocketServices>().onlineUserStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<dynamic> onlineUsers =
+                          snapshot.data as List<dynamic>;
+                      return onlineUsers.contains(userId)
+                          ? Text(
+                              "Active Now",
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff6A5C70),
+                              ),
+                            )
+                          : SizedBox.shrink();
+                    }
+                    return SizedBox.shrink();
+                  }),
+            ],
+          )
+        ],
+      ),
     ),
     leading: InkWell(
       onTap: () {
@@ -223,10 +230,7 @@ Widget chatTextBox(String reciverId) {
             Expanded(
               child: TextFormField(
                 controller: _chatController.messageController,
-                onFieldSubmitted: (value) async {
-                  await _chatController.sendMessage(reciverId, value, "chat");
-                },
-                textInputAction: TextInputAction.send,
+                textInputAction: TextInputAction.newline,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: 'Enter text here', // Placeholder text
@@ -234,9 +238,13 @@ Widget chatTextBox(String reciverId) {
               ),
             ),
             SizedBox(width: 8.0),
-            Icon(Icons.mic, color: Colors.grey), // Microphone icon
-            SizedBox(width: 4.0),
-            Icon(Icons.push_pin, color: Colors.grey), // Pin icon
+            // Pin icon
+            GestureDetector(
+                onTap: () async {
+                  await _chatController.sendMessage(reciverId,
+                      _chatController.messageController.text, "chat");
+                },
+                child: SvgPicture.asset("assets/images/sendChat.svg"))
           ],
         ),
       ),

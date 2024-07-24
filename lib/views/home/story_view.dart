@@ -1,14 +1,22 @@
-
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:checkedln/global.dart';
 import 'package:flutter/material.dart';
 import 'package:story_view/story_view.dart';
 
 class MoreStories extends StatefulWidget {
+  List<String?>? imageList;
+  MoreStories({
+    Key? key,
+    this.imageList,
+  }) : super(key: key);
   @override
   _MoreStoriesState createState() => _MoreStoriesState();
 }
 
 class _MoreStoriesState extends State<MoreStories> {
   final storyController = StoryController();
+
+  _MoreStoriesState();
 
   @override
   void dispose() {
@@ -19,75 +27,22 @@ class _MoreStoriesState extends State<MoreStories> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: StoryView(
+        onVerticalSwipeComplete: (p0) => Navigator.of(context).pop(),
         storyItems: [
-          StoryItem.text(
-            title: "I guess you'd love to see more of our food. That's great.",
-            backgroundColor: Colors.blue,
-          ),
-          StoryItem.text(
-            title: "Nice!\n\nTap to continue.",
-            backgroundColor: Colors.red,
-            textStyle: TextStyle(
-              fontFamily: 'Dancing',
-              fontSize: 40,
+          for (int i = 0; i < widget.imageList!.length; i++) ...[
+            StoryItem.pageImage(
+              url: widget.imageList![i]!,
+              controller: storyController,
             ),
-          ),
-          StoryItem.pageImage(
-            url:
-            "https://image.ibb.co/cU4WGx/Omotuo-Groundnut-Soup-braperucci-com-1.jpg",
-            caption: Text(
-              "Still sampling",
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            controller: storyController,
-          ),
-          StoryItem.pageImage(
-              url: "https://media.giphy.com/media/5GoVLqeAOo6PK/giphy.gif",
-              caption: Text(
-                "Working with gifs",
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              controller: storyController),
-          StoryItem.pageImage(
-            url: "https://media.giphy.com/media/XcA8krYsrEAYXKf4UQ/giphy.gif",
-            caption: Text(
-              "Hello, from the other side",
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            controller: storyController,
-          ),
-          StoryItem.pageImage(
-            url: "https://media.giphy.com/media/XcA8krYsrEAYXKf4UQ/giphy.gif",
-            caption: Text(
-              "Hello, from the other side2",
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.white,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            controller: storyController,
-          ),
+          ]
         ],
         onStoryShow: (storyItem, index) {
           print("Showing a story");
         },
         onComplete: () {
           print("Completed a cycle");
+          Navigator.of(context).pop();
         },
         progressPosition: ProgressPosition.top,
         repeat: false,

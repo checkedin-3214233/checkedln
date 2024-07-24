@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:intl/intl.dart';
 
 import 'package:checkedln/global.dart';
 import 'package:checkedln/res/snakbar.dart';
@@ -22,6 +23,8 @@ class CreateCheckInController extends GetxController {
   var address = <GeoCodeResult>[].obs;
   var latitude = 0.0.obs;
   var longitude = 0.0.obs;
+  var isEditing = false.obs;
+  var id = "".obs;
   TextEditingController typeController = TextEditingController();
   TextEditingController checkInNameController = TextEditingController();
   TextEditingController location = TextEditingController();
@@ -120,6 +123,22 @@ class CreateCheckInController extends GetxController {
     return true;
   }
 
+  validateChange() async {
+    typeController.text = "";
+    bannerImage.value = "";
+    startDateTime.text = "";
+    endDateTime.text = "";
+    startTime.text = "";
+    endTime.text = "";
+    checkInNameController.text = "";
+    location.text = "";
+    aboutCheckIn.text = "";
+    latitude.value = 0.0;
+    longitude.value = 0.0;
+    isEditing.value = false;
+    id.value = "";
+  }
+
   Future<String> uploadImage(File file) async {
     isImageUploading.value = true;
     try {
@@ -153,18 +172,59 @@ class CreateCheckInController extends GetxController {
         final snackBar = SnackBar(
           content: Text('Event Created Succesfully'),
         );
+        isCreatingEvent.value = false;
+        update();
+        validateChange();
 
         ScaffoldMessenger.of(ctx!).showSnackBar(snackBar);
-        EventModel eventModel = EventModel.fromJson(response.data["event"]);
+        EventModel eventModel =
+            EventModel.fromJson(response.data["getNewEvent"]);
         Get.find<CheckInController>().upcomingEvents.add(eventModel);
         Get.find<CheckInController>().update();
 
         update();
         getIt<LocationService>().getNearbyEvents();
+        Navigator.pop(ctx!);
+      }
+    }
+  }
+
+  editEvent() async {
+    if (await validate()) {
+      isCreatingEvent.value = true;
+      var data = {
+        "type": typeController.text,
+        "bannerImages": bannerImage.value,
+        "checkInName": checkInNameController.text,
+        "startDateTime": getDateTime(startDateTime.text, startTime.text),
+        "endDateTime": getDateTime(endDateTime.text, endTime.text),
+        "address": location.text,
+        "description": aboutCheckIn.text,
+        "lat": latitude.value,
+        "long": longitude.value,
+        "price": double.parse(
+            !priceController.text.isEmpty ? priceController.text : "0.0"),
+      };
+      dio.Response response =
+          await _checkInServices.updateEvent(id.value, data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final snackBar = SnackBar(
+          content: Text('Event Created Succesfully'),
+        );
+        isCreatingEvent.value = false;
+        update();
+        validateChange();
+
+        ScaffoldMessenger.of(ctx!).showSnackBar(snackBar);
+        EventModel eventModel = EventModel.fromJson(response.data["event"]);
+        Get.find<CheckInController>().getUpcomingEvent();
+        Get.find<CheckInController>().update();
+        isCreatingEvent.value = false;
+        update();
+        getIt<LocationService>().getNearbyEvents();
+        Navigator.pop(ctx!);
       }
       isCreatingEvent.value = false;
-
-      ctx!.pop();
     }
   }
 
@@ -205,5 +265,21 @@ class CreateCheckInController extends GetxController {
         log(e.message.toString());
       }
     }
+  }
+
+  void editEventFild(EventModel upcomingEvent) {
+    isEditing.value = true;
+    DateFormat timeFormat = DateFormat('HH:mm:ss');
+    typeController.text = upcomingEvent.type!;
+    bannerImage.value = upcomingEvent.bannerImages!;
+    startDateTime.text = upcomingEvent.startDateTime!.toLocal().toString();
+    endDateTime.text = upcomingEvent.endDateTime!.toLocal().toString();
+    startTime.text = timeFormat.format(upcomingEvent.startDateTime!.toLocal());
+    endTime.text = timeFormat.format(upcomingEvent.endDateTime!.toLocal());
+    checkInNameController.text = upcomingEvent.checkInName!;
+    location.text = upcomingEvent.location!.address!;
+    aboutCheckIn.text = upcomingEvent.description!;
+    latitude.value = upcomingEvent.location!.coordinates!.coordinates!.last;
+    longitude.value = upcomingEvent.location!.coordinates!.coordinates!.first;
   }
 }

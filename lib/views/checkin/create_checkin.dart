@@ -18,36 +18,43 @@ class CreateCheckIn extends StatefulWidget {
 }
 
 class _CreateCheckInState extends State<CreateCheckIn> {
-  CreateCheckInController _checkInController = Get.put(CreateCheckInController());
+  CreateCheckInController _checkInController =
+      Get.find<CreateCheckInController>();
   String? _selectedItem;
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Obx(() => _checkInController.isCreatingEvent.value
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : InkWell(
-              onTap: () async {
-                await _checkInController.createEvent();
-              },
-              child: Container(
-                height: 62.h,
-                margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-                alignment: Alignment.center,
-                child: Text(
-                  "Create",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16.sp),
-                ),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16.w.h),
-                    color: Color(0xffBD57EA)),
-              ),
-            )),
+      bottomNavigationBar:
+          Obx(() => _checkInController.isCreatingEvent.value == true
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : InkWell(
+                  onTap: () async {
+                    await _checkInController.createEvent();
+                  },
+                  child: Container(
+                    height: 62.h,
+                    margin:
+                        EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Create",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16.sp),
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.w.h),
+                        color: Color(0xffBD57EA)),
+                  ),
+                )),
       appBar: mainAppBar("Check-ins", [], SizedBox.shrink(), false),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -76,7 +83,8 @@ class _CreateCheckInState extends State<CreateCheckIn> {
                       setState(() {
                         _selectedItem = newValue!;
                       });
-                      _checkInController.typeController.text = newValue!.toLowerCase();
+                      _checkInController.typeController.text =
+                          newValue!.toLowerCase();
                     },
                     items: <String>['Public', 'Private'].map((String value) {
                       return DropdownMenuItem<String>(
@@ -173,7 +181,7 @@ class _CreateCheckInState extends State<CreateCheckIn> {
                       "Event Venue", true)
                   .marginSymmetric(vertical: 5.h),
               userName(_checkInController.priceController, TextInputType.number,
-                  "Price (optional)", false)
+                      "Price (optional)", false)
                   .marginSymmetric(vertical: 5.h),
               userName(_checkInController.aboutCheckIn, TextInputType.name,
                       "Write about Check-in", false)
