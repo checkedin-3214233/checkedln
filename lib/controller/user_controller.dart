@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:intl/intl.dart' as intl;
 
 import 'package:checkedln/global.dart';
 import 'package:checkedln/res/snakbar.dart';
@@ -61,7 +62,9 @@ class UserController extends GetxController {
         firstName.text = splitName[0];
         lastName.text = splitName.last;
         userName.text = userModel.value!.userName!;
-        dateOfBirth.text = userModel.value!.dateOfBirth!.toString();
+        dateOfBirth.text =
+            intl.DateFormat("yyyy-MM-dd").format(userModel.value!.dateOfBirth!);
+        userModel.value!.dateOfBirth!.toString();
         gender.text = userModel.value!.gender!;
         bio.text = userModel.value!.bio!;
         profileUrl.value = userModel.value!.profileImageUrl!;

@@ -162,17 +162,6 @@ class _GetStartedState extends State<GetStarted> {
                           }
                         },
                       )),
-                textTwoTittle(
-                    "Already have an account? ",
-                    Text(
-                      "Login",
-                      style: TextStyle(
-                          fontSize: 14.sp,
-                          color: getIt<ColorsFile>().textColor2,
-                          fontWeight: FontWeight.w700),
-                    ), () {
-                  Get.to(() => Login());
-                }).marginOnly(top: 16.h),
               ],
             ),
           ],

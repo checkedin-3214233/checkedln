@@ -47,16 +47,17 @@ class _OtpVerificationState extends State<OtpVerification> {
             children: [
               authHeading("Verify OTP"),
               authSubHeading(
-                  "Enter the 6-digit code sent to your registered phone number +91********${authController.phoneNumberController.text[authController.phoneNumberController.length-2]}${authController.phoneNumberController.text[authController.phoneNumberController.length-1]}"),
+                  "Enter the 6-digit code sent to your registered phone number +91********${authController.phoneNumberController.text[authController.phoneNumberController.length - 2]}${authController.phoneNumberController.text[authController.phoneNumberController.length - 1]}"),
               Pinput(
                 length: 6,
                 defaultPinTheme: defaultPinTheme,
                 focusedPinTheme: defaultPinTheme,
+                controller: Get.find<AuthController>().otpController,
                 submittedPinTheme: defaultPinTheme,
                 pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                 showCursor: true,
                 onCompleted: (pin) async =>
-                    {Get.find<AuthController>().verifyOtp(pin)},
+                    {Get.find<AuthController>().verifyOtp()},
               ).marginOnly(top: 16.h, bottom: 8.h),
               textTwoTittle(
                       "Didn't received the OTP? ",
@@ -82,7 +83,9 @@ class _OtpVerificationState extends State<OtpVerification> {
                           style: TextStyle(
                               color: colorsFile.whiteColor, fontSize: 16.sp),
                         ),
-                        () {},
+                        () {
+                          Get.find<AuthController>().verifyOtp();
+                        },
                       ),
               )
             ],

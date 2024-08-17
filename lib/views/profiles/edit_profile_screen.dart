@@ -55,7 +55,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       },
                       child: Container(
                         child: ProfileAvatar(
-                          imageUrl: _userController.profileUrl.value,
+                          imageUrl: _userController.profileUrl.value.isEmpty
+                              ? _userController.userModel.value!.gender ==
+                                      "male"
+                                  ? "https://userallimages.s3.amazonaws.com/male.png"
+                                  : "https://userallimages.s3.amazonaws.com/female.png"
+                              : _userController.profileUrl.value,
                           size: 107,
                           child: Container(
                             padding: EdgeInsets.all(6.0),
@@ -85,17 +90,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               SizedBox(
                 height: 15,
               ),
-              userName(
-                  _userController.firstName, TextInputType.text, "First Name",true),
-              userName(
-                  _userController.lastName, TextInputType.text, "Last Name",true),
-              userName(
-                  _userController.userName, TextInputType.text, "User Name",true),
+              userName(_userController.firstName, TextInputType.text,
+                  "First Name", true),
+              userName(_userController.lastName, TextInputType.text,
+                  "Last Name", true),
+              userName(_userController.userName, TextInputType.text,
+                  "User Name", true),
               userName(_userController.dateOfBirth, TextInputType.text,
-                  "Date of Birth*",false),
-              userName(
-                  _userController.gender, TextInputType.text, "Select Gender",false),
-              userName(_userController.bio, TextInputType.text, "Bio",false),
+                  "Date of Birth*", false),
+              userName(_userController.gender, TextInputType.text,
+                  "Select Gender", false),
+              userName(_userController.bio, TextInputType.text, "Bio", false),
               Obx(() => _userController.isLoading.value
                   ? Center(
                       child: CircularProgressIndicator(),

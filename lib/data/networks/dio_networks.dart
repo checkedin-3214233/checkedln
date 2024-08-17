@@ -51,6 +51,7 @@ class DioNetwork {
     log("IN 3");
     try {
       Response response = await _dio.post(path, data: data);
+      log(response.data.toString());
       log(response.statusCode.toString());
       return response;
     } catch (err) {

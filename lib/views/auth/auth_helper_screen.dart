@@ -3,6 +3,7 @@ import 'package:checkedln/data/injection/dependency_injection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 
@@ -49,10 +50,10 @@ AppBar appBar() {
       onTap: () {
         ctx!.pop();
       },
-      child: Image.asset(
-        "assets/images/back_btn.webp",
-        height: 40.h,
-        width: 40.w,
+      child: Padding(
+        padding: EdgeInsets.all(10.0),
+        child: SvgPicture.asset("assets/images/backGreay.svg",
+            height: 20.h, width: 20.w),
       ),
     ),
   );

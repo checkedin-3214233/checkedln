@@ -23,6 +23,7 @@ class AuthController extends GetxController {
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController countryCodeController =
       TextEditingController(text: "+91");
+  TextEditingController otpController = TextEditingController();
   TextEditingController firstName = TextEditingController();
   TextEditingController lastName = TextEditingController();
   TextEditingController userName = TextEditingController();
@@ -45,6 +46,7 @@ class AuthController extends GetxController {
   CacheManager cacheManager = getIt<CacheManager>();
   validatePhoneNumber() async {
     isSendingOtp.value = true;
+
     if (phoneNumberController.text.length == 10 &&
         countryCodeController.text.isNotEmpty) {
       try {
@@ -89,11 +91,17 @@ class AuthController extends GetxController {
     }
   }
 
-  verifyOtp(String otp) async {
+  verifyOtp() async {
     isOtpVerification.value = true;
+    if (otpController.text.isEmpty) {
+      showSnakBar("Please Enter Otp");
+      isOtpVerification.value = false;
+      return;
+    }
     try {
       dio.Response response = await _authServices.verifyOtp(
-          "${countryCodeController.text}${phoneNumberController.text}", otp);
+          "${countryCodeController.text}${phoneNumberController.text}",
+          otpController.text);
       if (response.statusCode == 200 && response.data["isSuccesfull"]) {
         isOtpVerification.value = true;
         showSnakBar(response.data['message']);
