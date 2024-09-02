@@ -30,7 +30,7 @@ class DioNetwork {
     }
     try {
       Response response = await _dio.get(path);
-
+      log(response.data.toString());
       return response;
     } catch (err) {
       log(err.toString());

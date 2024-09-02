@@ -21,6 +21,7 @@ class CheckInServices {
   final String _liveEvents = dotenv.env["LIVE_EVENTS"]!;
   final String _changeStatus = dotenv.env["CHANGE_EVENT_STATUS"]!;
   final String _joinEventThemSelf = dotenv.env["JOIN_EVENT_THEMSELF"]!;
+  final String _addImages = dotenv.env["ADD_IMAGE"]!;
 
   changeStatus(String id, String status) async {
     try {
@@ -254,6 +255,20 @@ class CheckInServices {
     try {
       Response response =
           await dioNetwork.updateDate("$_event/$id", data: body);
+      print(response);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  addImages(String id, List<String> images) async {
+    try {
+      Response response = await dioNetwork.updateDate(
+        "$_event$_addImages$id",
+        data: {"images": images},
+      );
       print(response);
       return response;
     } catch (e) {

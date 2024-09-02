@@ -1,6 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:checkedln/global.dart';
+import 'package:checkedln/models/checkIn/info_event_model.dart';
+import 'package:checkedln/models/user/userModel.dart';
 import 'package:checkedln/res/colors/routes/route_constant.dart';
 import 'package:checkedln/res/snakbar.dart';
 import 'package:checkedln/views/checkin/select_location.dart';
@@ -10,6 +13,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../controller/checkin/check_in_controller.dart';
@@ -18,9 +22,11 @@ import '../../controller/checkin/get_checkin_controller.dart';
 import '../../controller/user_controller.dart';
 import '../../data/injection/dependency_injection.dart';
 import '../../data/local/cache_manager.dart';
+import '../../models/checkIn/main_event_model.dart';
 import '../../res/colors/colors.dart';
 import 'package:intl/intl.dart';
 
+import '../../services/upload_image.dart';
 import '../dialog/dialog_helper.dart';
 import '../profiles/profile_avatar.dart'; // Import the intl package for date formatting
 
@@ -364,7 +370,32 @@ Widget checkIn(int count, bool isUpcoming) {
                               )
                             ],
                           ),
-                          () {},
+                          () async{
+                        UploadImage uploadImage = UploadImage();
+                                  List<XFile>? image =
+                                      await ImagePicker().pickMultiImage();
+                                  List<String> list = [];
+                                  if (image.isEmpty) {
+                                    return;
+                                  }
+                                  for (var i = 0; i < image.length; i++) {
+                                    log(i.toString() +
+                                        "Image" +
+                                        image[i].path.toString());
+                                    String url = await uploadImage
+                                        .uploadImage(File(image[i].path));
+                                    list.add(url);
+                                  }
+                                  if (list.isEmpty) {
+                                    return;
+                                  }
+
+                                  log("Images" + list.toString());
+                                  Get.find<CheckInController>().uploadImages(list,  isUpcoming
+                ? _checkInController.upcomingEvents[count].id!
+                : _checkInController.pastEvent[count].id!);
+
+                          },
                           Color((0xffF8F7F8))),
                     )
                   : SizedBox.shrink()
@@ -721,24 +752,45 @@ Widget userName(TextEditingController controller, TextInputType type,
   const gender = ["male", "female", "other"];
   return TextField(
     maxLines: hintText == "Write about Check-in" ? 3 : null,
+    maxLength: hintText == "Write about Check-in" ? 15 : null,
     textInputAction: TextInputAction.next,
     onTap: () async {
       if (hintText == "Event Venue") {
         ctx!.push(RoutesConstants.selectLocation, extra: controller);
       }
       if (hintText == "Start Date" || hintText == "End Date") {
+        DateTime lastDate = DateTime(2050);
+        DateTime firstDate = DateTime.now().add(Duration(days: 1));
+        if (hintText == "End Date") {
+          if (Get.find<CreateCheckInController>().startDateTime.text.isEmpty) {
+            showSnakBar("Please Select Start Date First");
+            return;
+          }
+          String date = Get.find<CreateCheckInController>().startDateTime.text;
+          DateTime dateTime = DateTime.parse(date);
+          firstDate = dateTime;
+          lastDate = dateTime.add(Duration(days: 1));
+          print(lastDate);
+        }
         final DateTime? picked = await showDatePicker(
           context: ctx!,
           barrierDismissible: false,
-          initialDate: DateTime.now(),
-          firstDate: DateTime.now(),
-          lastDate: DateTime(2050),
+          initialDate: firstDate,
+          firstDate: firstDate,
+          lastDate: lastDate,
         );
         if (picked != null) {
           controller.text = picked.toString().substring(0, 10);
+          Get.find<CreateCheckInController>().update();
         }
       }
       if (hintText == "Start Time" || hintText == "End Time") {
+        if (hintText == "End Time") {
+          if (Get.find<CreateCheckInController>().startTime.text.isEmpty) {
+            showSnakBar("Please Select Start Time First");
+            return;
+          }
+        }
         final TimeOfDay? picked =
             await showTimePicker(context: ctx!, initialTime: TimeOfDay.now());
         if (picked != null) {
@@ -753,13 +805,21 @@ Widget userName(TextEditingController controller, TextInputType type,
     keyboardType: type,
     decoration: InputDecoration(
       suffixIcon: (hintText == "Start Date" || hintText == "End Date")
-          ? Image.asset("assets/images/calender.webp")
+          ? SvgPicture.asset(
+              "assets/images/date_svg.svg",
+              width: 18.w,
+              height: 18.h,
+            ).paddingAll(20.w.h)
           : (hintText == "Start Time" || hintText == "End Time")
-              ? Image.asset("assets/images/time.png")
+              ? SvgPicture.asset("assets/images/time_svg.svg",
+                      width: 18.w, height: 18.h)
+                  .paddingAll(20.w.h)
               : hintText == "Select Gender"
                   ? Image.asset("assets/images/drop_down.webp")
                   : hintText == "Event Venue"
-                      ? Image.asset("assets/images/venue.png")
+                      ? SvgPicture.asset("assets/images/location_svg.svg",
+                          width: 18.w, height: 18.h)
+                          .paddingAll(20.w.h)
                       : null,
       filled: true,
       fillColor: Color(0xFFF5F4F6), // Background color
@@ -815,147 +875,599 @@ Widget checkInUser(bool isLive, int i) {
       Get.find<GetCheckInController>();
   final UserController _userController = Get.find<UserController>();
   log("KGF${isLive}");
-  return InkWell(
-    onTap: () {
-      if ((isLive
-              ? _getCheckInController.eventModel!.value.event!.checkedIn![i].id
-              : _getCheckInController
-                  .eventModel!.value.event!.attendies![i].id) ==
-          getIt<CacheManager>().getUserId()) {
-        ctx!.push(RoutesConstants.myProfile);
-      } else {
-        ctx!.push(
-            "${RoutesConstants.userProfile}/${isLive ? _getCheckInController.eventModel!.value.event!.checkedIn![i].id : _getCheckInController.eventModel!.value.event!.attendies![i].id}");
-      }
-    },
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
+  return Obx(() => InkWell(
+        onTap: () {
+          if ((isLive
+                  ? _getCheckInController
+                      .eventModel!.value.event!.checkedIn![i].id
+                  : _getCheckInController
+                      .eventModel!.value.event!.attendies![i].id) ==
+              getIt<CacheManager>().getUserId()) {
+            ctx!.push(RoutesConstants.myProfile);
+          } else {
+            ctx!.push(
+                "${RoutesConstants.userProfile}/${isLive ? _getCheckInController.eventModel!.value.event!.checkedIn![i].id : _getCheckInController.eventModel!.value.event!.attendies![i].id}");
+          }
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ProfileAvatar(
-                imageUrl: isLive
-                    ? _getCheckInController
-                        .eventModel!.value.event!.checkedIn![i].profileImageUrl!
-                    : _getCheckInController.eventModel!.value.event!
-                        .attendies![i].profileImageUrl!,
-                size: 40,
-                child: const SizedBox.shrink(),
-                borderColor: Colors.white),
-            SizedBox(
-              width: 4.w,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
-                Text(
-                  isLive
-                      ? _getCheckInController
-                          .eventModel!.value.event!.checkedIn![i].name!
-                      : _getCheckInController
-                          .eventModel!.value.event!.attendies![i].name!,
-                  style: TextStyle(
-                      color: const Color(0xFF050506),
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600),
+                ProfileAvatar(
+                    imageUrl: isLive
+                        ? _getCheckInController.eventModel!.value.event!
+                            .checkedIn![i].profileImageUrl!
+                        : _getCheckInController.eventModel!.value.event!
+                            .attendies![i].profileImageUrl!,
+                    size: 40,
+                    child: const SizedBox.shrink(),
+                    borderColor: Colors.white),
+                SizedBox(
+                  width: 4.w,
                 ),
-                // i == 1 || i == 2
-                //     ? Text(
-                //         "2 Mututals",
-                //         style: TextStyle(
-                //             color: const Color(
-                //                 0xFF6A5C70),
-                //             fontSize:
-                //                 12.sp,
-                //             fontWeight:
-                //                 FontWeight
-                //                     .w600),
-                //       )
-                //     : SizedBox.shrink(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isLive
+                          ? _getCheckInController
+                              .eventModel!.value.event!.checkedIn![i].name!
+                          : _getCheckInController
+                              .eventModel!.value.event!.attendies![i].name!,
+                      style: TextStyle(
+                          color: const Color(0xFF050506),
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    // i == 1 || i == 2
+                    //     ? Text(
+                    //         "2 Mututals",
+                    //         style: TextStyle(
+                    //             color: const Color(
+                    //                 0xFF6A5C70),
+                    //             fontSize:
+                    //                 12.sp,
+                    //             fontWeight:
+                    //                 FontWeight
+                    //                     .w600),
+                    //       )
+                    //     : SizedBox.shrink(),
+                  ],
+                ),
+                SizedBox(
+                  width: 4.w,
+                ),
+                _getCheckInController.eventModel!.value.event!.createdBy ==
+                        (isLive
+                            ? _getCheckInController
+                                .eventModel!.value.event!.checkedIn![i].id
+                            : _getCheckInController
+                                .eventModel!.value.event!.attendies![i].id)
+                    ? Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4.w.h),
+                            color: Color(0xFFE2CFFB)),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 2.h, horizontal: 6.w),
+                        child: Text(
+                          "Host",
+                          style: TextStyle(
+                              color: Color(0xFF4111C1),
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      )
+                    : SizedBox.shrink()
               ],
             ),
-            SizedBox(
-              width: 4.w,
-            ),
-            _getCheckInController.eventModel!.value.event!.createdBy ==
-                    (isLive
+            (isLive
                         ? _getCheckInController
                             .eventModel!.value.event!.checkedIn![i].id
                         : _getCheckInController
-                            .eventModel!.value.event!.attendies![i].id)
+                            .eventModel!.value.event!.attendies![i].id) ==
+                    getIt<CacheManager>().getUserId()
                 ? Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4.w.h),
-                        color: Color(0xFFE2CFFB)),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 2.h, horizontal: 6.w),
-                    child: Text(
-                      "Host",
-                      style: TextStyle(
-                          color: Color(0xFF4111C1),
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  )
-                : SizedBox.shrink()
-          ],
-        ),
-        (isLive
-                    ? _getCheckInController
-                        .eventModel!.value.event!.checkedIn![i].id
-                    : _getCheckInController
-                        .eventModel!.value.event!.attendies![i].id) ==
-                getIt<CacheManager>().getUserId()
-            ? Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.w.h),
-                    border: Border.all(color: Color(0xFFAD2EE5))),
-                padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-                child: Text(
-                  "You",
-                  style: TextStyle(
-                      color: Color(0xFFAD2EE5),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14.sp),
-                ),
-              )
-            : !_userController.userModel.value!.buddies!.contains(isLive
-                    ? _getCheckInController
-                        .eventModel!.value.event!.checkedIn![i].id
-                    : _getCheckInController
-                        .eventModel!.value.event!.attendies![i].id)
-                ? GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.w.h),
-                          color: Color(0xFFAD2EE5)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
-                      child: Text(
-                        "Catch-up",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14.sp),
-                      ),
-                    ),
-                  )
-                : Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.w.h),
                         border: Border.all(color: Color(0xFFAD2EE5))),
                     padding:
                         EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
                     child: Text(
-                      "Unfollow",
+                      "You",
                       style: TextStyle(
                           color: Color(0xFFAD2EE5),
                           fontWeight: FontWeight.w700,
                           fontSize: 14.sp),
                     ),
                   )
-      ],
-    ),
-  );
+                : (isLive
+                        ? _getCheckInController.eventModel!.value.event!
+                            .checkedIn![i].requestedUser!.requestedUser!
+                            .contains(getIt<CacheManager>().getUserId())
+                        : _getCheckInController.eventModel!.value.event!
+                            .attendies![i].requestedUser!.requestedUser!
+                            .contains(getIt<CacheManager>().getUserId()))
+                    ? Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.w.h),
+                            border: Border.all(color: Color(0xFFAD2EE5))),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 8.h, horizontal: 16.w),
+                        child: Text(
+                          "requested",
+                          style: TextStyle(
+                              color: Color(0xFFAD2EE5),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14.sp),
+                        ),
+                      )
+                    : _userController.userModel.value!.requestedUser!.requestedUser!
+                            .contains(isLive
+                                ? _getCheckInController
+                                    .eventModel!.value.event!.checkedIn![i].id
+                                : _getCheckInController
+                                    .eventModel!.value.event!.attendies![i].id)
+                        ? GestureDetector(
+                            onTap: () async {
+                              bool isTrue =
+                                  await _getCheckInController.acceptUser(isLive
+                                      ? _getCheckInController.eventModel!.value
+                                          .event!.checkedIn![i].id!
+                                      : _getCheckInController.eventModel!.value
+                                          .event!.attendies![i].id!);
+                              _userController.update();
+                              if (isTrue) {
+                                List reqUser = _userController.userModel.value!
+                                    .requestedUser!.requestedUser!;
+                                reqUser.remove(isLive
+                                    ? _getCheckInController.eventModel!.value
+                                        .event!.checkedIn![i].id!
+                                    : _getCheckInController.eventModel!.value
+                                        .event!.attendies![i].id!);
+                                RequestedUser newRequestedUser = RequestedUser(
+                                    id: _userController
+                                        .userModel.value!.requestedUser!.id,
+                                    userId: _userController
+                                        .userModel.value!.requestedUser!.userId,
+                                    requestedUser: reqUser,
+                                    createdAt: _userController.userModel.value!
+                                        .requestedUser!.createdAt,
+                                    updatedAt: _userController.userModel.value!
+                                        .requestedUser!.updatedAt,
+                                    v: _userController
+                                        .userModel.value!.requestedUser!.v);
+                                List newBuddies =
+                                    _userController.userModel.value!.buddies!;
+                                newBuddies.add(isLive
+                                    ? _getCheckInController.eventModel!.value
+                                        .event!.checkedIn![i].id!
+                                    : _getCheckInController.eventModel!.value
+                                        .event!.attendies![i].id!);
+
+                                _userController.userModel.value = UserModel(
+                                    id: _userController.userModel.value!.id,
+                                    name: _userController.userModel.value!.name,
+                                    userName: _userController
+                                        .userModel.value!.userName,
+                                    phone:
+                                        _userController.userModel.value!.phone,
+                                    profileImageUrl: _userController
+                                        .userModel.value!.profileImageUrl,
+                                    notificationToken: _userController
+                                        .userModel.value!.notificationToken,
+                                    dateOfBirth: _userController
+                                        .userModel.value!.dateOfBirth,
+                                    gender:
+                                        _userController.userModel.value!.gender,
+                                    userImages: _userController
+                                        .userModel.value!.userImages,
+                                    bio: _userController.userModel.value!.bio,
+                                    buddies: newBuddies,
+                                    createdAt: _userController
+                                        .userModel.value!.createdAt,
+                                    updatedAt: _userController
+                                        .userModel.value!.updatedAt,
+                                    v: _userController.userModel.value!.v,
+                                    requestedUser: newRequestedUser);
+                                _userController.update();
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.w.h),
+                                  color: Color(0xFFAD2EE5)),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8.h, horizontal: 16.w),
+                              child: Text(
+                                "Accept",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14.sp),
+                              ),
+                            ),
+                          )
+                        : !_userController.userModel.value!.buddies!.contains(isLive
+                                ? _getCheckInController.eventModel!.value.event!.checkedIn![i].id
+                                : _getCheckInController.eventModel!.value.event!.attendies![i].id)
+                            ? GestureDetector(
+                                onTap: () async {
+                                  bool isTrue = await _getCheckInController
+                                      .catchUpUser(isLive
+                                          ? _getCheckInController.eventModel!
+                                              .value.event!.checkedIn![i].id!
+                                          : _getCheckInController.eventModel!
+                                              .value.event!.attendies![i].id!);
+                                  if (isTrue) {
+                                    if (isLive) {
+                                      List newRequestedUser =
+                                          _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .checkedIn![i]
+                                              .requestedUser!
+                                              .requestedUser!;
+                                      newRequestedUser.add(
+                                          getIt<CacheManager>().getUserId());
+                                      print(newRequestedUser);
+                                      RequestedUser requestedUser =
+                                          RequestedUser(
+                                              id: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .checkedIn![i]
+                                                  .requestedUser!
+                                                  .id,
+                                              userId: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .checkedIn![i]
+                                                  .requestedUser!
+                                                  .userId,
+                                              requestedUser: newRequestedUser,
+                                              createdAt: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .checkedIn![i]
+                                                  .requestedUser!
+                                                  .createdAt,
+                                              updatedAt: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .checkedIn![i]
+                                                  .requestedUser!
+                                                  .updatedAt,
+                                              v: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .checkedIn![i]
+                                                  .requestedUser!
+                                                  .v);
+                                      print(requestedUser.requestedUser);
+                                      UserModel newUserModel = UserModel(
+                                          id: _getCheckInController.eventModel!
+                                              .value.event!.checkedIn![i].id,
+                                          name: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .checkedIn![i]
+                                              .name,
+                                          userName: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .checkedIn![i]
+                                              .userName,
+                                          phone: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .checkedIn![i]
+                                              .phone,
+                                          profileImageUrl: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .checkedIn![i]
+                                              .profileImageUrl,
+                                          notificationToken:
+                                              _getCheckInController.eventModel!.value.event!.checkedIn![i].notificationToken,
+                                          dateOfBirth: _getCheckInController.eventModel!.value.event!.checkedIn![i].dateOfBirth,
+                                          gender: _getCheckInController.eventModel!.value.event!.checkedIn![i].gender,
+                                          userImages: _getCheckInController.eventModel!.value.event!.checkedIn![i].userImages,
+                                          bio: _getCheckInController.eventModel!.value.event!.checkedIn![i].bio,
+                                          buddies: _getCheckInController.eventModel!.value.event!.checkedIn![i].buddies,
+                                          createdAt: _getCheckInController.eventModel!.value.event!.checkedIn![i].createdAt,
+                                          updatedAt: _getCheckInController.eventModel!.value.event!.checkedIn![i].updatedAt,
+                                          v: _getCheckInController.eventModel!.value.event!.checkedIn![i].v,
+                                          requestedUser: requestedUser);
+                                      List<UserModel>? newAttendies =
+                                          _getCheckInController.eventModel!
+                                              .value.event!.checkedIn!;
+                                      newAttendies[i] = newUserModel;
+                                      InfoEventModel newInfoEventModel = InfoEventModel(
+                                          id: _getCheckInController
+                                              .eventModel!.value.event!.id,
+                                          type: _getCheckInController
+                                              .eventModel!.value.event!.type,
+                                          status: _getCheckInController
+                                              .eventModel!.value.event!.status,
+                                          bannerImages: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .bannerImages,
+                                          checkInName: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .checkInName,
+                                          startDateTime: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .startDateTime,
+                                          endDateTime: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .endDateTime,
+                                          description: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .description,
+                                          createdBy: _getCheckInController.eventModel!.value.event!.createdBy,
+                                          attendies: newAttendies,
+                                          images: _getCheckInController.eventModel!.value.event!.images,
+                                          location: _getCheckInController.eventModel!.value.event!.location,
+                                          price: _getCheckInController.eventModel!.value.event!.price,
+                                          createdAt: _getCheckInController.eventModel!.value.event!.createdAt,
+                                          updatedAt: _getCheckInController.eventModel!.value.event!.updatedAt,
+                                          checkedIn: _getCheckInController.eventModel!.value.event!.checkedIn,
+                                          interested: _getCheckInController.eventModel!.value.event!.interested,
+                                          v: _getCheckInController.eventModel!.value.event!.v);
+                                      _getCheckInController.eventModel!.value =
+                                          MainEventModel(
+                                              event: newInfoEventModel,
+                                              status: _getCheckInController
+                                                  .eventModel!.value.status);
+                                    } else {
+                                      List newRequestedUser =
+                                          _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .attendies![i]
+                                              .requestedUser!
+                                              .requestedUser!;
+                                      newRequestedUser.add(
+                                          getIt<CacheManager>().getUserId());
+                                      print(newRequestedUser);
+                                      RequestedUser requestedUser =
+                                          RequestedUser(
+                                              id: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .attendies![i]
+                                                  .requestedUser!
+                                                  .id,
+                                              userId: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .attendies![i]
+                                                  .requestedUser!
+                                                  .userId,
+                                              requestedUser: newRequestedUser,
+                                              createdAt: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .attendies![i]
+                                                  .requestedUser!
+                                                  .createdAt,
+                                              updatedAt: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .attendies![i]
+                                                  .requestedUser!
+                                                  .updatedAt,
+                                              v: _getCheckInController
+                                                  .eventModel!
+                                                  .value
+                                                  .event!
+                                                  .attendies![i]
+                                                  .requestedUser!
+                                                  .v);
+                                      print(requestedUser.requestedUser);
+                                      UserModel newUserModel = UserModel(
+                                          id: _getCheckInController.eventModel!
+                                              .value.event!.attendies![i].id,
+                                          name: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .attendies![i]
+                                              .name,
+                                          userName: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .attendies![i]
+                                              .userName,
+                                          phone: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .attendies![i]
+                                              .phone,
+                                          profileImageUrl: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .attendies![i]
+                                              .profileImageUrl,
+                                          notificationToken:
+                                              _getCheckInController.eventModel!.value.event!.attendies![i].notificationToken,
+                                          dateOfBirth: _getCheckInController.eventModel!.value.event!.attendies![i].dateOfBirth,
+                                          gender: _getCheckInController.eventModel!.value.event!.attendies![i].gender,
+                                          userImages: _getCheckInController.eventModel!.value.event!.attendies![i].userImages,
+                                          bio: _getCheckInController.eventModel!.value.event!.attendies![i].bio,
+                                          buddies: _getCheckInController.eventModel!.value.event!.attendies![i].buddies,
+                                          createdAt: _getCheckInController.eventModel!.value.event!.attendies![i].createdAt,
+                                          updatedAt: _getCheckInController.eventModel!.value.event!.attendies![i].updatedAt,
+                                          v: _getCheckInController.eventModel!.value.event!.attendies![i].v,
+                                          requestedUser: requestedUser);
+                                      List<UserModel>? newAttendies =
+                                          _getCheckInController.eventModel!
+                                              .value.event!.attendies!;
+                                      newAttendies[i] = newUserModel;
+                                      InfoEventModel newInfoEventModel = InfoEventModel(
+                                          id: _getCheckInController
+                                              .eventModel!.value.event!.id,
+                                          type: _getCheckInController
+                                              .eventModel!.value.event!.type,
+                                          status: _getCheckInController
+                                              .eventModel!.value.event!.status,
+                                          bannerImages: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .bannerImages,
+                                          checkInName: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .checkInName,
+                                          startDateTime: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .startDateTime,
+                                          endDateTime: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .endDateTime,
+                                          description: _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .description,
+                                          createdBy: _getCheckInController.eventModel!.value.event!.createdBy,
+                                          attendies: newAttendies,
+                                          images: _getCheckInController.eventModel!.value.event!.images,
+                                          location: _getCheckInController.eventModel!.value.event!.location,
+                                          price: _getCheckInController.eventModel!.value.event!.price,
+                                          createdAt: _getCheckInController.eventModel!.value.event!.createdAt,
+                                          updatedAt: _getCheckInController.eventModel!.value.event!.updatedAt,
+                                          checkedIn: _getCheckInController.eventModel!.value.event!.checkedIn,
+                                          interested: _getCheckInController.eventModel!.value.event!.interested,
+                                          v: _getCheckInController.eventModel!.value.event!.v);
+                                      _getCheckInController.eventModel!.value =
+                                          MainEventModel(
+                                              event: newInfoEventModel,
+                                              status: _getCheckInController
+                                                  .eventModel!.value.status);
+                                    }
+                                    _getCheckInController.update();
+                                  }
+                                  _userController.update();
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(8.w.h),
+                                      color: Color(0xFFAD2EE5)),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.h, horizontal: 16.w),
+                                  child: Text(
+                                    "Catch-up",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14.sp),
+                                  ),
+                                ),
+                              )
+                            : InkWell(
+                                onTap: () async {
+                                  bool isTrue = await _getCheckInController
+                                      .unfollowUpUser(isLive
+                                          ? _getCheckInController.eventModel!
+                                              .value.event!.checkedIn![i].id!
+                                          : _getCheckInController.eventModel!
+                                              .value.event!.attendies![i].id!);
+                                  _userController.update();
+                                  if (isTrue) {
+                                    List newBuddies = _userController
+                                        .userModel.value!.buddies!;
+                                    newBuddies.remove(isLive
+                                        ? _getCheckInController.eventModel!
+                                            .value.event!.checkedIn![i].id!
+                                        : _getCheckInController.eventModel!
+                                            .value.event!.attendies![i].id!);
+
+                                    _userController.userModel.value = UserModel(
+                                        id: _userController.userModel.value!.id,
+                                        name: _userController
+                                            .userModel.value!.name,
+                                        userName: _userController
+                                            .userModel.value!.userName,
+                                        phone: _userController
+                                            .userModel.value!.phone,
+                                        profileImageUrl: _userController
+                                            .userModel.value!.profileImageUrl,
+                                        notificationToken: _userController
+                                            .userModel.value!.notificationToken,
+                                        dateOfBirth: _userController
+                                            .userModel.value!.dateOfBirth,
+                                        gender: _userController
+                                            .userModel.value!.gender,
+                                        userImages: _userController
+                                            .userModel.value!.userImages,
+                                        bio: _userController
+                                            .userModel.value!.bio,
+                                        buddies: newBuddies,
+                                        createdAt: _userController
+                                            .userModel.value!.createdAt,
+                                        updatedAt: _userController
+                                            .userModel.value!.updatedAt,
+                                        v: _userController.userModel.value!.v,
+                                        requestedUser: _userController
+                                            .userModel.value!.requestedUser);
+                                    _userController.update();
+                                  }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(8.w.h),
+                                      border:
+                                          Border.all(color: Color(0xFFAD2EE5))),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.h, horizontal: 16.w),
+                                  child: Text(
+                                    "Unfollow",
+                                    style: TextStyle(
+                                        color: Color(0xFFAD2EE5),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14.sp),
+                                  ),
+                                ),
+                              )
+          ],
+        ),
+      ));
 }

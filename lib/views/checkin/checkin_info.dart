@@ -457,7 +457,7 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                         shrinkWrap: true,
                                         physics: NeverScrollableScrollPhysics(),
                                         itemBuilder: (context, i) {
-                                          return checkInUser(
+                                          return Obx(() =>  checkInUser(
                                               (_getCheckInController
                                                           .eventModel!
                                                           .value
@@ -476,7 +476,7 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                                           .compareTo(
                                                               DateTime.now()) >
                                                       0),
-                                              i);
+                                              i));
                                         },
                                         separatorBuilder: (context, i) {
                                           return Padding(

@@ -28,7 +28,11 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
-      v: json['__v'] as int?,
+      v: json['__v'] as num?,
+      requestedUser: json['requestedUser'] == null
+          ? null
+          : RequestedUser.fromJson(
+              json['requestedUser'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -43,6 +47,31 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'userImages': instance.userImages,
       'bio': instance.bio,
       'buddies': instance.buddies,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
+      '__v': instance.v,
+      'requestedUser': instance.requestedUser,
+    };
+
+RequestedUser _$RequestedUserFromJson(Map<String, dynamic> json) =>
+    RequestedUser(
+      id: json['_id'] as String?,
+      userId: json['userId'] as String?,
+      requestedUser: json['requestedUser'] as List<dynamic>?,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
+      v: json['__v'] as num?,
+    );
+
+Map<String, dynamic> _$RequestedUserToJson(RequestedUser instance) =>
+    <String, dynamic>{
+      '_id': instance.id,
+      'userId': instance.userId,
+      'requestedUser': instance.requestedUser,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       '__v': instance.v,

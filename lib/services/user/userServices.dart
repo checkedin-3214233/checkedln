@@ -14,6 +14,7 @@ class UserServices {
   final String _catchUpUser = dotenv.env['CATCH_UP_USER']!;
   final String _acceptCatchUp = dotenv.env['ACCEPT_CATCH_UP']!;
   final String _rejectCatchUp = dotenv.env['REJECT_CATCH_UP']!;
+  final String _unfollowUser = dotenv.env['UNFOLLOW_USER']!;
 
   Future<dynamic> getUser() async {
     log(_user + _update);
@@ -104,6 +105,17 @@ class UserServices {
   rejectCatchUp(String id) async {
     try {
       Response response = await dioNetwork.getData(_user + _rejectCatchUp + id);
+
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  unfollowUser(String id) async{
+    try {
+      Response response = await dioNetwork.getData(_user + _unfollowUser + id);
 
       return response;
     } catch (e) {

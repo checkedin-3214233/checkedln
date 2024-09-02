@@ -85,6 +85,19 @@ class CreateCheckInController extends GetxController {
       isCreatingEvent.value = false;
       return false;
     }
+    DateTime startD = getDateTime(startDateTime.text, startTime.text);
+    DateTime endD = getDateTime(endDateTime.text, endTime.text);
+    print(startD.toString() + " " + endD.toString());
+    if (startD.isAfter(endD)) {
+      showSnakBar(
+        "Start date and time is not before the end date and time.",
+      );
+      isCreatingEvent.value = false;
+      print("Start date and time is not before the end date and time.");
+      return false;
+    } else {
+      print("Start date and time is  before the end date and time.");
+    }
     if (checkInNameController.text.isEmpty) {
       showSnakBar(
         "Event Name  is required",
@@ -120,6 +133,7 @@ class CreateCheckInController extends GetxController {
       latitude.value = coordinates.latitude!;
       longitude.value = coordinates.longitude!;
     }
+
     return true;
   }
 
@@ -191,7 +205,7 @@ class CreateCheckInController extends GetxController {
 
   editEvent() async {
     if (await validate()) {
-      isCreatingEvent.value = true;
+      //   isCreatingEvent.value = true;
       var data = {
         "type": typeController.text,
         "bannerImages": bannerImage.value,
@@ -205,26 +219,27 @@ class CreateCheckInController extends GetxController {
         "price": double.parse(
             !priceController.text.isEmpty ? priceController.text : "0.0"),
       };
-      dio.Response response =
-          await _checkInServices.updateEvent(id.value, data);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final snackBar = SnackBar(
-          content: Text('Event Created Succesfully'),
-        );
-        isCreatingEvent.value = false;
-        update();
-        validateChange();
+      print(data);
+      // dio.Response response =
+      //     await _checkInServices.updateEvent(id.value, data);
+      // if (response.statusCode == 200 || response.statusCode == 201) {
+      //   final snackBar = SnackBar(
+      //     content: Text('Event Created Succesfully'),
+      //   );
+      //   isCreatingEvent.value = false;
+      //   update();
+      //   validateChange();
 
-        ScaffoldMessenger.of(ctx!).showSnackBar(snackBar);
-        EventModel eventModel = EventModel.fromJson(response.data["event"]);
-        Get.find<CheckInController>().getUpcomingEvent();
-        Get.find<CheckInController>().update();
-        isCreatingEvent.value = false;
-        update();
-        getIt<LocationService>().getNearbyEvents();
-        Navigator.pop(ctx!);
-      }
-      isCreatingEvent.value = false;
+      //   ScaffoldMessenger.of(ctx!).showSnackBar(snackBar);
+      //   EventModel eventModel = EventModel.fromJson(response.data["event"]);
+      //   Get.find<CheckInController>().getUpcomingEvent();
+      //   Get.find<CheckInController>().update();
+      //   isCreatingEvent.value = false;
+      //   update();
+      //   getIt<LocationService>().getNearbyEvents();
+      //   Navigator.pop(ctx!);
+      // }
+      // isCreatingEvent.value = false;
     }
   }
 
@@ -271,6 +286,7 @@ class CreateCheckInController extends GetxController {
     isEditing.value = true;
     DateFormat timeFormat = DateFormat('HH:mm:ss');
     typeController.text = upcomingEvent.type!;
+    id.value = upcomingEvent.id!;
     bannerImage.value = upcomingEvent.bannerImages!;
     startDateTime.text = upcomingEvent.startDateTime!.toLocal().toString();
     endDateTime.text = upcomingEvent.endDateTime!.toLocal().toString();

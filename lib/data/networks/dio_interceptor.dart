@@ -74,6 +74,7 @@ class DioInterceptor extends Interceptor {
           return handler.resolve(response);
         } else {
           ///
+            log("Krish1");
           getIt<CacheManager>().setLoggedIn(false);
           getIt<CacheManager>().setToken("", "");
           getIt<CacheManager>().setUserId("");
@@ -84,19 +85,22 @@ class DioInterceptor extends Interceptor {
           Restart.restartApp();
         }
       } on DioException catch (e) {
-        // If the request fails again, pass the error to the next interceptor in the chain.
+        log("Krish"+e.toString());
+        // If the request fails again,
+        // pass the error to the next interceptor in the chain.
         ///
-        showSnakBar("Your Login Session has expired. Please login again.");
-        Future.delayed(Duration(seconds: 2), () async {
-          getIt<CacheManager>().setLoggedIn(false);
-          getIt<CacheManager>().setToken("", "");
-          getIt<CacheManager>().setUserId("");
-          await getIt.reset();
-          g.Get.reset();
-
-          ctx!.pushReplacement(RoutesConstants.onboarding);
-          Restart.restartApp();
-        });
+        //
+        // showSnakBar("Your Login Session has expired. Please login again.");
+        // Future.delayed(Duration(seconds: 2), () async {
+        //   getIt<CacheManager>().setLoggedIn(false);
+        //   getIt<CacheManager>().setToken("", "");
+        //   getIt<CacheManager>().setUserId("");
+        //   await getIt.reset();
+        //   g.Get.reset();
+        //
+        //   ctx!.pushReplacement(RoutesConstants.onboarding);
+        //   Restart.restartApp();
+        // });
         handler.next(e);
       }
       // Return to prevent the next interceptor in the chain from being executed.

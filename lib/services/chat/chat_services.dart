@@ -13,7 +13,7 @@ class ChatServices {
   Future<dynamic> getChatList() async {
     try {
       Response response = await dioNetwork.getData(_messages);
-      print(response);
+      print("KGF" + response.toString());
       return response;
     } catch (e) {
       log(e.toString());

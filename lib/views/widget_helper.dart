@@ -200,7 +200,7 @@ Widget liveCheckIn() {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  SvgPicture.asset(
+                                                  _checkInController.getMutuals(_checkInController.liveEvents[i].attendies!, _userController.userModel.value!.buddies!)<1?SizedBox.shrink(): SvgPicture.asset(
                                                       "assets/images/mutual.svg"),
                                                   SizedBox(
                                                     width: 2.w,
@@ -356,7 +356,7 @@ Widget nearByCheckIn() {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Image.asset("assets/images/people.png"),
+                                _checkInController.getMutuals(_checkInController.nearByEvents[i].attendies!, _userController.userModel.value!.buddies!)<1? SizedBox.shrink(): Image.asset(_checkInController.getMutuals(_checkInController.nearByEvents[i].attendies!, _userController.userModel.value!.buddies!)==1?"assets/images/mutual_one.png":"assets/images/people.png"),
                                 Text(
                                   "${_checkInController.getMutuals(_checkInController.nearByEvents[i].attendies!, _userController.userModel.value!.buddies!)} Mutuals",
                                   style: TextStyle(

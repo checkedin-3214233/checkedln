@@ -509,7 +509,8 @@ class _UserProfileState extends State<UserProfile> {
                                                         dateOfBirth: _userProfileController.userProfileModel.value!.user!.dateOfBirth,
                                                         createdAt: _userProfileController.userProfileModel.value!.user!.createdAt,
                                                         updatedAt: _userProfileController.userProfileModel.value!.user!.updatedAt,
-                                                        v: _userProfileController.userProfileModel.value!.user!.v);
+                                                        v: _userProfileController.userProfileModel.value!.user!.v,
+                                                        requestedUser: null);
                                                     log("${RoutesConstants.userChatScreen}/${_userProfileController.userProfileModel.value!.user!.userName}/${_userProfileController.userProfileModel.value!.user!.id}/${_userProfileController.userProfileModel.value!.user!.profileImageUrl!.isEmpty ? "https://via.placeholder.com/150" : _userProfileController.userProfileModel.value!.user!.profileImageUrl}");
                                                     ctx!.push(
                                                         "${RoutesConstants.userChatScreen}/${_userProfileController.userProfileModel.value!.user!.userName}/${_userProfileController.userProfileModel.value!.user!.id}",

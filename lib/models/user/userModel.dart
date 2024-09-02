@@ -19,6 +19,7 @@ class UserModel {
     required this.createdAt,
     required this.updatedAt,
     required this.v,
+    required this.requestedUser,
   });
 
   @JsonKey(name: '_id')
@@ -62,8 +63,11 @@ class UserModel {
   static const String updatedAtKey = "updatedAt";
 
   @JsonKey(name: '__v')
-  final int? v;
+  final num? v;
   static const String vKey = "__v";
+
+  final RequestedUser? requestedUser;
+  static const String requestedUserKey = "requestedUser";
 
   UserModel copyWith({
     String? id,
@@ -79,7 +83,8 @@ class UserModel {
     List<dynamic>? buddies,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? v,
+    num? v,
+    RequestedUser? requestedUser,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -96,6 +101,7 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       v: v ?? this.v,
+      requestedUser: requestedUser ?? this.requestedUser,
     );
   }
 
@@ -106,6 +112,66 @@ class UserModel {
 
   @override
   String toString() {
-    return "$id, $name, $userName, $phone, $profileImageUrl, $notificationToken, $dateOfBirth, $gender, $userImages, $bio, $buddies, $createdAt, $updatedAt, $v, ";
+    return "$id, $name, $userName, $phone, $profileImageUrl, $notificationToken, $dateOfBirth, $gender, $userImages, $bio, $buddies, $createdAt, $updatedAt, $v, $requestedUser, ";
+  }
+}
+
+@JsonSerializable()
+class RequestedUser {
+  RequestedUser({
+    required this.id,
+    required this.userId,
+    required this.requestedUser,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.v,
+  });
+
+  @JsonKey(name: '_id')
+  final String? id;
+  static const String idKey = "_id";
+
+  final String? userId;
+  static const String userIdKey = "userId";
+
+  final List<dynamic>? requestedUser;
+  static const String requestedUserKey = "requestedUser";
+
+  final DateTime? createdAt;
+  static const String createdAtKey = "createdAt";
+
+  final DateTime? updatedAt;
+  static const String updatedAtKey = "updatedAt";
+
+  @JsonKey(name: '__v')
+  final num? v;
+  static const String vKey = "__v";
+
+  RequestedUser copyWith({
+    String? id,
+    String? userId,
+    List<dynamic>? requestedUser,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    num? v,
+  }) {
+    return RequestedUser(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      requestedUser: requestedUser ?? this.requestedUser,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      v: v ?? this.v,
+    );
+  }
+
+  factory RequestedUser.fromJson(Map<String, dynamic> json) =>
+      _$RequestedUserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RequestedUserToJson(this);
+
+  @override
+  String toString() {
+    return "$id, $userId, $requestedUser, $createdAt, $updatedAt, $v, ";
   }
 }

@@ -24,7 +24,7 @@ class _PostScreenState extends State<PostScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    _postController.pickMultipleImages();
+
     super.initState();
   }
 

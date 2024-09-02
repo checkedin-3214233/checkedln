@@ -8,6 +8,8 @@ import 'package:dio/dio.dart' as dio;
 import '../../models/checkIn/main_event_model.dart';
 import '../../models/user/userModel.dart';
 import '../../services/checkIn/check_in_services.dart';
+import '../../services/user/userServices.dart';
+import '../user_controller.dart';
 
 class GetCheckInController extends GetxController {
   var isLoading = false.obs;
@@ -77,5 +79,40 @@ class GetCheckInController extends GetxController {
     }
     isLoading.value = false;
     return false;
+  }
+
+  catchUpUser(String id)async{
+
+    update();
+    dio.Response response =  await UserServices().catchUpUser(id);
+    if(response.statusCode==200||response.statusCode==201){
+      showSnakBar(response.data['message']);
+      return true;
+    }else{
+
+      return false;
+    }
+  }
+  unfollowUpUser(String id)async{
+
+    dio.Response response =  await UserServices().unfollowUser(id);
+    if(response.statusCode==200||response.statusCode==201){
+      showSnakBar(response.data['message']);
+      return true;
+    }else{
+
+      return false;
+    }
+  }
+  acceptUser(String id)async{
+
+    dio.Response response =  await UserServices().acceptCatchUp(id);
+    if(response.statusCode==200||response.statusCode==201){
+      showSnakBar(response.data['message']);
+      return true;
+    }else{
+
+      return false;
+    }
   }
 }

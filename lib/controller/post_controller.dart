@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:checkedln/global.dart';
 import 'package:checkedln/models/post/post_model.dart';
 import 'package:checkedln/models/user/userModel.dart';
 import 'package:checkedln/services/post/post_services.dart';
@@ -8,6 +9,7 @@ import 'package:checkedln/services/user/userServices.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../res/snakbar.dart';
@@ -51,10 +53,13 @@ class PostController extends GetxController {
       showSnakBar(
         "Please select atleast one  images",
       );
+      isCreatingPost.value = false;
       return false;
     }
 
     if (locationController.text.isEmpty) {
+      showSnakBar("Please enter location");
+      isCreatingPost.value = false;
       Get.rawSnackbar(message: "Please enter location");
       return false;
     }
@@ -85,10 +90,12 @@ class PostController extends GetxController {
           description: response.data["post"]["description"],
           id: "1",
           likes: []));
-      Get.rawSnackbar(message: "Post created successfully");
-      Navigator.pop(Get.overlayContext!);
+      showSnakBar("Post created successfully");
+      isCreatingPost.value = false;
+
+      ctx!.pop();
     } else {
-      Get.rawSnackbar(message: "Something went wrong");
+      showSnakBar(response.data["message"]);
     }
     isCreatingPost.value = false;
   }

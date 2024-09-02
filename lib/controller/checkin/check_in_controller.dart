@@ -255,4 +255,16 @@ class CheckInController extends GetxController {
     }
     return false;
   }
+
+  uploadImages(List<String> images, String id) async {
+    dio.Response response = await _checkInServices.addImages(id, images);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      showSnakBar("Images Uploaded Succesfully");
+      return true;
+    } else {
+      showSnakBar("Some error occurred at our end");
+      return false;
+    }
+  }
 }
