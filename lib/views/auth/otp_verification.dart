@@ -8,6 +8,7 @@ import '../../data/injection/dependency_injection.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
 import 'get_started.dart';
+import 'widget/auth_button.dart';
 
 class OtpVerification extends StatefulWidget {
   const OtpVerification({super.key});
@@ -32,6 +33,9 @@ class _OtpVerificationState extends State<OtpVerification> {
       borderRadius: BorderRadius.circular(11.w.h),
     ),
   );
+  onOtpSubmit() async {
+    await Get.find<AuthController>().verifyOtp();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +60,7 @@ class _OtpVerificationState extends State<OtpVerification> {
                 submittedPinTheme: defaultPinTheme,
                 pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                 showCursor: true,
-                onCompleted: (pin) async =>
-                    {Get.find<AuthController>().verifyOtp()},
+                onCompleted: (pin) async => onOtpSubmit,
               ).marginOnly(top: 16.h, bottom: 8.h),
               textTwoTittle(
                       "Didn't received the OTP? ",
@@ -70,24 +73,12 @@ class _OtpVerificationState extends State<OtpVerification> {
                       ),
                       () {})
                   .marginOnly(top: 8.h, bottom: 8.h),
-              Obx(
-                () => authController.isOtpVerification.value
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : authButton(
-                        getIt<ColorsFile>().primaryColor,
-                        Text(
-                          "Verify",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: colorsFile.whiteColor, fontSize: 16.sp),
-                        ),
-                        () {
-                          Get.find<AuthController>().verifyOtp();
-                        },
-                      ),
-              )
+              AuthButton(
+                text: "Verify",
+                onPressed: () async {
+                  await onOtpSubmit();
+                },
+              ),
             ],
           ),
           textTwoTittle(

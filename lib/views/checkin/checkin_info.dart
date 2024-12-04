@@ -122,7 +122,7 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
             GestureDetector(
                 onTap: () {
                   Share.share(
-                      'check out this new event in Checkdln https://checkedln-server.onrender.com${RoutesConstants.checkin}/${widget.id}/${widget.shareId}/${false}');
+                      'Check Out This Event\n${_getCheckInController.eventModel!.value.event!.checkInName} || ${(_getCheckInController.eventModel!.value.event!.startDateTime!.day)}-${(_getCheckInController.eventModel!.value.event!.startDateTime!.month)}-${(_getCheckInController.eventModel!.value.event!.startDateTime!.year)} || ${(_getCheckInController.eventModel!.value.event!.startDateTime!.hour)}-${(_getCheckInController.eventModel!.value.event!.startDateTime!.minute)}\nin Checkdln \n||  https://checkedln-server.onrender.com${RoutesConstants.checkin}/${widget.id}/${widget.shareId}/${false} ||');
                 },
                 child: SvgPicture.asset("assets/images/shareWvent.svg")
                     .marginOnly(right: 10.w))
@@ -457,7 +457,7 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                         shrinkWrap: true,
                                         physics: NeverScrollableScrollPhysics(),
                                         itemBuilder: (context, i) {
-                                          return Obx(() =>  checkInUser(
+                                          return Obx(() => checkInUser(
                                               (_getCheckInController
                                                           .eventModel!
                                                           .value
