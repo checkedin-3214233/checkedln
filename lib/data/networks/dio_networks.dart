@@ -83,14 +83,15 @@ class DioNetwork {
     }
   }
 
-  Future<dynamic> updateDate(String path, {Map<String, dynamic>? data}) {
+  Future<dynamic> updateDate(String path, {Map<String, dynamic>? data}) async {
     _dio.interceptors.add(LogInterceptor(responseBody: true));
     bool login = getIt<CacheManager>().getLoggedIn() == true ?? false;
     if (login) {
       _dio.interceptors.add(DioInterceptor());
     }
     try {
-      return _dio.patch(path, data: data);
+      Response response = await _dio.patch(path, data: data);
+      return response;
     } catch (err) {
       log(err.toString());
       if (err is SocketException) {

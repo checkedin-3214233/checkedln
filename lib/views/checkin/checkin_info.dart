@@ -387,10 +387,27 @@ class _CheckInfoScreenState extends State<CheckInfoScreen> {
                                     height: 5.h,
                                   ),
                                   twoTile(
-                                      "${_getCheckInController.getMutuals(_getCheckInController.eventModel!.value.event!.attendies!, _userController.userModel.value!.buddies!)} Mutuals",
+                                      "${_getCheckInController.getMutuals(_getCheckInController.eventModel!.value.event!.attendies!, _userController.userModel.value!.buddies!).length} Mutuals",
                                       SvgPicture.asset(
-                                          "assets/images/peoplelive.svg"),
-                                      () {},
+                                          "assets/images/peoplelive.svg"), () {
+                                    ctx!.push(RoutesConstants.userMutuals,
+                                        extra: {
+                                          "attendies": _getCheckInController
+                                              .eventModel!
+                                              .value
+                                              .event!
+                                              .attendies,
+                                          "list":
+                                              _getCheckInController.getMutuals(
+                                                  _getCheckInController
+                                                      .eventModel!
+                                                      .value
+                                                      .event!
+                                                      .attendies!,
+                                                  _userController.userModel
+                                                      .value!.buddies!)
+                                        });
+                                  },
                                       EdgeInsets.symmetric(
                                           vertical: 8.h, horizontal: 16.w)),
                                   SizedBox(

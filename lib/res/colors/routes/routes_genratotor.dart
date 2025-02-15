@@ -5,6 +5,7 @@ import 'package:checkedln/global.dart';
 import 'package:checkedln/models/user/userModel.dart';
 import 'package:checkedln/services/Permission/permission_phone.dart';
 import 'package:checkedln/views/auth/signup.dart';
+import 'package:checkedln/views/checkin/users_mutuls.dart';
 import 'package:checkedln/views/profiles/edit_profile_screen.dart';
 import 'package:checkedln/views/profiles/my_profile_screen.dart';
 import 'package:checkedln/views/settings/setting_page.dart';
@@ -20,6 +21,8 @@ import '../../../views/auth/make_your_profile_pop.dart';
 import '../../../views/chats/user_chat_screen.dart';
 import '../../../views/gallery/event_gallery.dart';
 import '../../../views/home/story_view.dart';
+import '../../../views/profiles/buddies/user_buddies.dart';
+import '../../../views/profiles/checkins/user_checkin.dart';
 import '../../../views/profiles/user_profile.dart';
 import 'route_constant.dart';
 import '../../../views/auth/get_started.dart';
@@ -222,6 +225,18 @@ class RoutesGenerator {
             },
           ),
           GoRoute(
+            path: "${RoutesConstants.userMutuals}",
+            builder: (BuildContext context, GoRouterState state) {
+              Map<String, dynamic> map = state.extra as Map<String, dynamic>;
+              List<String> list = map["list"] as List<String>;
+              log("Krish$list");
+              return UserMutuals(
+                list1: list,
+                attendies: map["attendies"] as List<UserModel>,
+              );
+            },
+          ),
+          GoRoute(
             path: "${RoutesConstants.checkin}/:id/:sharedId/:isDeep",
             pageBuilder: (BuildContext context, GoRouterState state) {
               final String id = state.pathParameters['id']!;
@@ -249,6 +264,24 @@ class RoutesGenerator {
                   userId: state.pathParameters['userId']!,
                   userName: state.pathParameters['userName']!,
                   profileImageUrl: state.extra as String);
+            },
+          ),
+          GoRoute(
+            path: "${RoutesConstants.userBuddies}/:userId",
+            builder: (BuildContext context, GoRouterState state) {
+              log("krish${state.extra}");
+              return UserBuddiesScreen(
+                userId: state.pathParameters['userId']!,
+              );
+            },
+          ),
+          GoRoute(
+            path: "${RoutesConstants.userCheckins}/:userId",
+            builder: (BuildContext context, GoRouterState state) {
+              log("krish${state.extra}");
+              return UserCheckIns(
+                userId: state.pathParameters['userId']!,
+              );
             },
           ),
           GoRoute(

@@ -40,7 +40,7 @@ class _SettingPageState extends State<SettingPage> {
                         actions: [
                           TextButton(
                               onPressed: () {
-                                Get.back();
+                                ctx!.pop();
                               },
                               child: Text("No")),
                           TextButton(

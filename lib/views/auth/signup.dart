@@ -11,6 +11,7 @@ import '../../res/colors/colors.dart';
 import '../../res/colors/routes/route_constant.dart';
 import 'auth_helper_screen.dart';
 import 'otp_verification.dart';
+import 'widget/auth_button.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -41,22 +42,12 @@ class _SignUpState extends State<SignUp> {
                 Expanded(flex: 2, child: phoneNumberField(false)),
                 Expanded(flex: 8, child: phoneNumberField(true))
               ]).marginOnly(top: 16.h, bottom: 8.h),
-              Obx(() => _authController.isSendingOtp.value
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : authButton(
-                      getIt<ColorsFile>().primaryColor,
-                      Text(
-                        "Continue",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: colorsFile.whiteColor, fontSize: 16.sp),
-                      ),
-                      () async {
-                        await _authController.checkUser(false);
-                      },
-                    )),
+              AuthButton(
+                text: "Continue",
+                onPressed: () async {
+                  await _authController.checkUser(false);
+                },
+              ),
               textTwoTittle(
                   "Already have an account? ",
                   Text(

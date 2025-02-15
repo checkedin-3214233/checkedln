@@ -15,6 +15,8 @@ class UserServices {
   final String _acceptCatchUp = dotenv.env['ACCEPT_CATCH_UP']!;
   final String _rejectCatchUp = dotenv.env['REJECT_CATCH_UP']!;
   final String _unfollowUser = dotenv.env['UNFOLLOW_USER']!;
+  final String _getBuddies = dotenv.env['GET_BUDDIES_BY_ID']!;
+  final String _getEventByUserId = dotenv.env["GET_CHEKIN_BY_ID"]!;
 
   Future<dynamic> getUser() async {
     log(_user + _update);
@@ -113,10 +115,34 @@ class UserServices {
     }
   }
 
-  unfollowUser(String id) async{
+  unfollowUser(String id) async {
     try {
       Response response = await dioNetwork.getData(_user + _unfollowUser + id);
 
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  Future<dynamic> getBuddies(String userId) async {
+    try {
+      Response response =
+          await dioNetwork.getData(_user + _getBuddies + userId);
+      return response;
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  getEventByUserId(String id) async {
+    try {
+      Response response = await dioNetwork.getData(
+        "$_user$_getEventByUserId$id",
+      );
+      print(response);
       return response;
     } catch (e) {
       log(e.toString());

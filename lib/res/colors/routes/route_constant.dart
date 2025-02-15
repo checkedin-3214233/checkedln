@@ -22,6 +22,7 @@ class RoutesConstants {
   static const user = '/user';
   static const userStroies = '/user-stroies';
   static const userProfile = '/user-profile';
+  static const userMutuals = '/user-mutuals';
 
   static const checkin = '/checkin';
   static const shareCheckin = '/shareCheckin';
@@ -38,4 +39,7 @@ class RoutesConstants {
 
   static const settings = '/settings';
   static const editProfile = '/edit-profile';
+
+  static const userBuddies = '/user-buddies';
+  static const userCheckins = '/user-checkins';
 }

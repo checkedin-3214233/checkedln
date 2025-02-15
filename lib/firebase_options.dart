@@ -51,18 +51,19 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAEihxlInbz5DjVave73TNGD1zzxWal8VM',
-    appId: '1:54272999005:android:b4d096095f6b20e02897b4',
+    appId: '1:54272999005:android:3146e818b7be5a0a2897b4',
     messagingSenderId: '54272999005',
     projectId: 'checkedln',
-    storageBucket: 'checkedln.appspot.com',
+    storageBucket: 'checkedln.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBT4anHqrNbMFewsYhG2MeI1co6nsf_WAg',
-    appId: '1:54272999005:ios:b31cb8e0f9f7e7e72897b4',
+    appId: '1:54272999005:ios:ef0bb94ecf12c0ec2897b4',
     messagingSenderId: '54272999005',
     projectId: 'checkedln',
-    storageBucket: 'checkedln.appspot.com',
-    iosBundleId: 'com.example.checkedln',
+    storageBucket: 'checkedln.firebasestorage.app',
+    iosBundleId: 'com.rahul.syncup',
   );
+
 }

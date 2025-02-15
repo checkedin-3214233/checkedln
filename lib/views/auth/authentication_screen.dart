@@ -11,6 +11,7 @@ import '../../controller/auth_controller.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
 import 'login.dart';
+import 'widget/auth_button.dart';
 
 class AuthenticationScreen extends StatefulWidget {
   const AuthenticationScreen({super.key});
@@ -58,27 +59,21 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                       color: colorsFile.textColor1,
                       fontWeight: FontWeight.w400),
                 ),
-                authButton(
-                  getIt<ColorsFile>().primaryColor,
-                  Text(
-                    "Sign Up",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: colorsFile.whiteColor, fontSize: 16.sp),
-                  ),
-                  () {
+                SizedBox(
+                  height: 20.h,
+                ),
+                AuthButton(
+                  text: "Sign Up",
+                  onPressed: () {
                     ctx!.push(RoutesConstants.signUp);
                   },
                 ),
-                authButton(
-                  colorsFile.greyColorButton,
-                  Text(
-                    "Login",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: colorsFile.textColor5, fontSize: 16.sp),
-                  ),
-                  () {
+                SizedBox(
+                  height: 15.h,
+                ),
+                AuthButton(
+                  text: "Login",
+                  onPressed: () {
                     ctx!.push(RoutesConstants.login);
                   },
                 ),

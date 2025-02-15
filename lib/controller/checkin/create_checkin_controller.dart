@@ -210,8 +210,9 @@ class CreateCheckInController extends GetxController {
         "type": typeController.text,
         "bannerImages": bannerImage.value,
         "checkInName": checkInNameController.text,
-        "startDateTime": getDateTime(startDateTime.text, startTime.text),
-        "endDateTime": getDateTime(endDateTime.text, endTime.text),
+        "startDateTime":
+            getDateTime(startDateTime.text, startTime.text).toString(),
+        "endDateTime": getDateTime(endDateTime.text, endTime.text).toString(),
         "address": location.text,
         "description": aboutCheckIn.text,
         "lat": latitude.value,
@@ -220,26 +221,26 @@ class CreateCheckInController extends GetxController {
             !priceController.text.isEmpty ? priceController.text : "0.0"),
       };
       print(data);
-      // dio.Response response =
-      //     await _checkInServices.updateEvent(id.value, data);
-      // if (response.statusCode == 200 || response.statusCode == 201) {
-      //   final snackBar = SnackBar(
-      //     content: Text('Event Created Succesfully'),
-      //   );
-      //   isCreatingEvent.value = false;
-      //   update();
-      //   validateChange();
+      dio.Response response =
+          await _checkInServices.updateEvent(id.value, data);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final snackBar = SnackBar(
+          content: Text('Event Updated Succesfully'),
+        );
+        isCreatingEvent.value = false;
+        update();
+        validateChange();
 
-      //   ScaffoldMessenger.of(ctx!).showSnackBar(snackBar);
-      //   EventModel eventModel = EventModel.fromJson(response.data["event"]);
-      //   Get.find<CheckInController>().getUpcomingEvent();
-      //   Get.find<CheckInController>().update();
-      //   isCreatingEvent.value = false;
-      //   update();
-      //   getIt<LocationService>().getNearbyEvents();
-      //   Navigator.pop(ctx!);
-      // }
-      // isCreatingEvent.value = false;
+        ScaffoldMessenger.of(ctx!).showSnackBar(snackBar);
+        EventModel eventModel = EventModel.fromJson(response.data["event"]);
+        Get.find<CheckInController>().getUpcomingEvent();
+        Get.find<CheckInController>().update();
+        isCreatingEvent.value = false;
+        update();
+        getIt<LocationService>().getNearbyEvents();
+        Navigator.pop(ctx!);
+      }
+      isCreatingEvent.value = false;
     }
   }
 

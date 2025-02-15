@@ -40,7 +40,7 @@ class GetCheckInController extends GetxController {
     isLoading.value = false;
   }
 
-  getMutuals(List<UserModel> list1, List<dynamic> list2) {
+  List<String> getMutuals(List<UserModel> list1, List<dynamic> list2) {
     List<String> newList = [];
     List<String> newList2 = [];
     for (var element in list1) {
@@ -59,7 +59,7 @@ class GetCheckInController extends GetxController {
     List<String> commonList = commonElements.toList();
 
     print('Common elements: $commonList');
-    return commonList.length;
+    return commonList;
   }
 
   getList(List<UserModel> list) {}
@@ -81,37 +81,33 @@ class GetCheckInController extends GetxController {
     return false;
   }
 
-  catchUpUser(String id)async{
-
+  catchUpUser(String id) async {
     update();
-    dio.Response response =  await UserServices().catchUpUser(id);
-    if(response.statusCode==200||response.statusCode==201){
+    dio.Response response = await UserServices().catchUpUser(id);
+    if (response.statusCode == 200 || response.statusCode == 201) {
       showSnakBar(response.data['message']);
       return true;
-    }else{
-
+    } else {
       return false;
     }
   }
-  unfollowUpUser(String id)async{
 
-    dio.Response response =  await UserServices().unfollowUser(id);
-    if(response.statusCode==200||response.statusCode==201){
+  unfollowUpUser(String id) async {
+    dio.Response response = await UserServices().unfollowUser(id);
+    if (response.statusCode == 200 || response.statusCode == 201) {
       showSnakBar(response.data['message']);
       return true;
-    }else{
-
+    } else {
       return false;
     }
   }
-  acceptUser(String id)async{
 
-    dio.Response response =  await UserServices().acceptCatchUp(id);
-    if(response.statusCode==200||response.statusCode==201){
+  acceptUser(String id) async {
+    dio.Response response = await UserServices().acceptCatchUp(id);
+    if (response.statusCode == 200 || response.statusCode == 201) {
       showSnakBar(response.data['message']);
       return true;
-    }else{
-
+    } else {
       return false;
     }
   }

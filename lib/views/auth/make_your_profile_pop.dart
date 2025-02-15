@@ -10,6 +10,7 @@ import '../../controller/auth_controller.dart';
 import '../../data/injection/dependency_injection.dart';
 import '../../res/colors/colors.dart';
 import 'auth_helper_screen.dart';
+import 'widget/auth_button.dart';
 
 class MakeYourProfilePop extends StatefulWidget {
   const MakeYourProfilePop({super.key});
@@ -109,22 +110,12 @@ class _MakeYourProfilePopState extends State<MakeYourProfilePop> {
               }).marginOnly(top: 16.h),
             ],
           ),
-          Obx(() => _authController.isCreatingAccount.value
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : authButton(
-                  getIt<ColorsFile>().primaryColor,
-                  Text(
-                    "Next",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: colorsFile.whiteColor, fontSize: 16.sp),
-                  ),
-                  () async {
-                    await _authController.signup();
-                  },
-                )),
+          AuthButton(
+            text: "Next",
+            onPressed: () async {
+              await _authController.signup();
+            },
+          ),
         ],
       ).marginSymmetric(vertical: 16.h, horizontal: 16.w)),
     );

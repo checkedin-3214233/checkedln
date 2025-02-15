@@ -13,6 +13,8 @@ import 'auth_helper_screen.dart';
 import 'otp_verification.dart';
 import 'package:go_router/go_router.dart';
 
+import 'widget/auth_button.dart';
+
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -42,22 +44,12 @@ class _LoginState extends State<Login> {
                 Expanded(flex: 2, child: phoneNumberField(false)),
                 Expanded(flex: 8, child: phoneNumberField(true))
               ]).marginOnly(top: 16.h, bottom: 8.h),
-              Obx(() => authController.isSendingOtp.value
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : authButton(
-                      getIt<ColorsFile>().primaryColor,
-                      Text(
-                        "Login",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: colorsFile.whiteColor, fontSize: 16.sp),
-                      ),
-                      () async {
-                        await authController.checkUser(true);
-                      },
-                    )),
+              AuthButton(
+                text: "Login",
+                onPressed: () async {
+                  await authController.checkUser(true);
+                },
+              ),
               textTwoTittle(
                   "Don’t have an account? ",
                   Text(
@@ -67,7 +59,7 @@ class _LoginState extends State<Login> {
                         color: getIt<ColorsFile>().textColor2,
                         fontWeight: FontWeight.w700),
                   ), () {
-                context.go(RoutesConstants.createProfile);
+                ctx!.push(RoutesConstants.signUp);
               }).marginOnly(top: 16.h),
             ],
           ),

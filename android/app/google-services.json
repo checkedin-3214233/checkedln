@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "54272999005",
     "project_id": "checkedln",
-    "storage_bucket": "checkedln.appspot.com"
+    "storage_bucket": "checkedln.firebasestorage.app"
   },
   "client": [
     {
@@ -10,6 +10,25 @@
         "mobilesdk_app_id": "1:54272999005:android:b4d096095f6b20e02897b4",
         "android_client_info": {
           "package_name": "com.example.checkedln"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEihxlInbz5DjVave73TNGD1zzxWal8VM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54272999005:android:3146e818b7be5a0a2897b4",
+        "android_client_info": {
+          "package_name": "com.rahul.syncup"
         }
       },
       "oauth_client": [],

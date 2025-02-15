@@ -68,7 +68,10 @@ Widget bottomItem(int index) {
 AppBar appBar() {
   return AppBar(
     backgroundColor: Colors.white,
-    title: SvgPicture.asset("assets/images/logo.svg"),
+    title: SizedBox(
+        height: 40.h,
+        width: 40.w,
+        child: SvgPicture.asset("assets/images/newLogo.svg")),
     actions: [
       Padding(
           padding: EdgeInsets.only(right: 15.w),
@@ -106,36 +109,6 @@ Widget storyView(StoryController storyController) {
                           Stack(
                             alignment: Alignment.bottomRight,
                             children: [
-                              Container(
-                                margin: EdgeInsets.only(left: 10.w),
-                                width: 56,
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  color: Color(0xffEBE9EC),
-                                  border: Border.all(
-                                      color: Color(0xff9f2fe5), width: 2.w),
-                                  image: DecorationImage(
-                                      image: NetworkImage(Get.find<
-                                                  UserController>()
-                                              .userModel
-                                              .value!
-                                              .profileImageUrl!
-                                              .isEmpty
-                                          ? Get.find<UserController>()
-                                                      .userModel
-                                                      .value!
-                                                      .gender ==
-                                                  "male"
-                                              ? "https://userallimages.s3.amazonaws.com/male.png"
-                                              : "https://userallimages.s3.amazonaws.com/female.png"
-                                          : Get.find<UserController>()
-                                              .userModel
-                                              .value!
-                                              .profileImageUrl!),
-                                      fit: BoxFit.cover),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
                               GestureDetector(
                                 onTap: () async {
                                   UploadImage uploadImage = UploadImage();
@@ -163,8 +136,10 @@ Widget storyView(StoryController storyController) {
                                       .createStroy(list);
                                 },
                                 child: Container(
-                                  margin: EdgeInsets.only(left: 20.w),
+                                  margin: EdgeInsets.only(left: 10.w),
+                                  width: 56,
                                   child: Icon(Icons.add, color: Colors.white),
+                                  height: 56,
                                   decoration: BoxDecoration(
                                     color: Color(0xffEBE9EC),
                                     shape: BoxShape.circle,

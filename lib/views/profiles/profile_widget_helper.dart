@@ -9,9 +9,16 @@ Widget textColumn(String count, String name) {
     children: [
       Text(
         count,
-        style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w800),
+        style: TextStyle(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w800,
+            color: Color(0xff050506)),
       ),
-      Text(name, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600))
+      Text(name,
+          style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+              color: Color(0xff4A404F))),
     ],
   );
 }

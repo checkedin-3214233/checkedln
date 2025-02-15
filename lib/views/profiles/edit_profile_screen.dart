@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:checkedln/global.dart';
 import 'package:checkedln/views/profiles/profile_avatar.dart';
 import 'package:checkedln/views/profiles/profile_widget_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../controller/user_controller.dart';
@@ -30,8 +32,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             children: [
               AppBar(
-                leading: shareButton(
-                    Icon(Icons.arrow_back_ios_new_sharp), () => Get.back()),
+                leading: shareButton(Icon(Icons.arrow_back_ios_new_sharp), () {
+                  ctx!.pop();
+                }),
                 title: Text(
                   "Edit Profile",
                   style:

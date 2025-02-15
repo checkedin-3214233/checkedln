@@ -1,4 +1,4 @@
-package com.example.checkedln
+package com.rahul.syncup
 
 import io.flutter.embedding.android.FlutterActivity
 

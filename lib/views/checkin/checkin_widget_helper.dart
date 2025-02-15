@@ -194,6 +194,7 @@ Widget checkIn(int count, bool isUpcoming) {
                             _checkInController.upcomingEvents[count].id!, () {
                           CreateCheckInController _createCheckInController =
                               Get.find<CreateCheckInController>();
+                          ctx!.pop();
                           _createCheckInController.editEventFild(
                               _checkInController.upcomingEvents[count]);
                           ctx!.push(RoutesConstants.createCheckin);
@@ -369,34 +370,33 @@ Widget checkIn(int count, bool isUpcoming) {
                                     fontWeight: FontWeight.w600),
                               )
                             ],
-                          ),
-                          () async{
+                          ), () async {
                         UploadImage uploadImage = UploadImage();
-                                  List<XFile>? image =
-                                      await ImagePicker().pickMultiImage();
-                                  List<String> list = [];
-                                  if (image.isEmpty) {
-                                    return;
-                                  }
-                                  for (var i = 0; i < image.length; i++) {
-                                    log(i.toString() +
-                                        "Image" +
-                                        image[i].path.toString());
-                                    String url = await uploadImage
-                                        .uploadImage(File(image[i].path));
-                                    list.add(url);
-                                  }
-                                  if (list.isEmpty) {
-                                    return;
-                                  }
+                        List<XFile>? image =
+                            await ImagePicker().pickMultiImage();
+                        List<String> list = [];
+                        if (image.isEmpty) {
+                          return;
+                        }
+                        for (var i = 0; i < image.length; i++) {
+                          log(i.toString() +
+                              "Image" +
+                              image[i].path.toString());
+                          String url = await uploadImage
+                              .uploadImage(File(image[i].path));
+                          list.add(url);
+                        }
+                        if (list.isEmpty) {
+                          return;
+                        }
 
-                                  log("Images" + list.toString());
-                                  Get.find<CheckInController>().uploadImages(list,  isUpcoming
-                ? _checkInController.upcomingEvents[count].id!
-                : _checkInController.pastEvent[count].id!);
-
-                          },
-                          Color((0xffF8F7F8))),
+                        log("Images" + list.toString());
+                        Get.find<CheckInController>().uploadImages(
+                            list,
+                            isUpcoming
+                                ? _checkInController.upcomingEvents[count].id!
+                                : _checkInController.pastEvent[count].id!);
+                      }, Color((0xffF8F7F8))),
                     )
                   : SizedBox.shrink()
             ],
@@ -791,8 +791,11 @@ Widget userName(TextEditingController controller, TextInputType type,
             return;
           }
         }
-        final TimeOfDay? picked =
-            await showTimePicker(context: ctx!, initialTime: TimeOfDay.now());
+        final TimeOfDay? picked = await showTimePicker(
+            orientation: Orientation.landscape,
+            context: ctx!,
+            initialTime: TimeOfDay.now(),
+            initialEntryMode: TimePickerEntryMode.inputOnly);
         if (picked != null) {
           controller.text = _formatTimeOfDay(picked);
         }
@@ -818,7 +821,7 @@ Widget userName(TextEditingController controller, TextInputType type,
                   ? Image.asset("assets/images/drop_down.webp")
                   : hintText == "Event Venue"
                       ? SvgPicture.asset("assets/images/location_svg.svg",
-                          width: 18.w, height: 18.h)
+                              width: 18.w, height: 18.h)
                           .paddingAll(20.w.h)
                       : null,
       filled: true,
@@ -833,9 +836,10 @@ Widget userName(TextEditingController controller, TextInputType type,
       ),
       hintText: hintText,
       hintStyle: TextStyle(
+        overflow: TextOverflow.ellipsis,
         color: getIt<ColorsFile>().textColor4, // Text color
         fontWeight: FontWeight.w500, // Text weight
-        fontSize: 12.0.sp, // Text size
+        fontSize: 9.0.sp, // Text size
       ),
     ),
   ).marginSymmetric(vertical: 3.h);

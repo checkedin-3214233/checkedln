@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../controller/home_controller.dart';
+import '../../controller/my_checkin_controller.dart';
 import '../../controller/user_controller.dart';
 import '../../res/colors/routes/route_constant.dart';
 import '../checkin/past_checkin_sceen.dart';
@@ -25,9 +26,12 @@ class MyProfileScreen extends StatefulWidget {
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
   UserController _userController = Get.find<UserController>();
+  MyCheckInController _myCheckInController = Get.put(MyCheckInController());
+
   @override
   void initState() {
     // TODO: implement initState
+    _myCheckInController.getCheckin(_userController.userModel.value!.id!);
     super.initState();
   }
 
@@ -73,6 +77,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                             .currentBottomIndex
                                             .value = 0;
                                         Get.find<HomeController>().update();
+                                        if (ctx!.canPop()) {
+                                          ctx!.pop();
+                                        }
                                       }),
                                       backButton(Icon(Icons.settings), () {
                                         ctx!.push(RoutesConstants.settings);
@@ -136,6 +143,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                               .currentBottomIndex
                                               .value = 0;
                                           Get.find<HomeController>().update();
+                                          if (ctx!.canPop()) {
+                                            ctx!.pop();
+                                          }
                                         }),
                                         backButton(Icon(Icons.settings), () {
                                           ctx!.push(RoutesConstants.settings);
@@ -202,8 +212,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                           ? _userController.userModel.value!
                                                       .gender ==
                                                   "male"
-                                              ? "https://userallimages.s3.amazonaws.com/male.png"
-                                              : "https://userallimages.s3.amazonaws.com/female.png"
+                                              ? "https://userallimages.s3.amazonaws.com/profile_img.png"
+                                              : "https://userallimages.s3.amazonaws.com/profile_img.png"
                                           : _userController.userModel.value!
                                               .profileImageUrl!,
                                       size: 107,
@@ -211,12 +221,30 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                       child: SizedBox.shrink(),
                                     ),
                                   ),
-                                  textColumn(
-                                      _userController
-                                          .userModel.value!.buddies!.length
-                                          .toString(),
-                                      "Buddies"),
-                                  textColumn("0", "Checkins"),
+                                  InkWell(
+                                    onTap: () {
+                                      ctx!.push(RoutesConstants.userBuddies +
+                                          "/${_userController.userModel.value!.id!}");
+                                    },
+                                    child: textColumn(
+                                        _userController
+                                            .userModel.value!.buddies!.length
+                                            .toString(),
+                                        "Buddies"),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      ctx!.push(RoutesConstants.userCheckins +
+                                          "/${_userController.userModel.value!.id!}");
+                                    },
+                                    child: textColumn(
+                                        _myCheckInController.checkin.length! > 0
+                                            ? _myCheckInController
+                                                .checkin.length
+                                                .toString()
+                                            : "0",
+                                        "Checkins"),
+                                  ),
                                   shareButton(
                                       Icon(Icons.share_outlined),
                                       () => Share.share(

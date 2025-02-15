@@ -30,7 +30,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 flex: 1,
                 child: IconButton(
                   onPressed: () {
-                    Get.back();
+                    ctx!.pop();
                   },
                   icon: Icon(Icons.arrow_back_ios_new_outlined),
                 ),

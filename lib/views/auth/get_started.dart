@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:checkedln/controller/auth_controller.dart';
 import 'package:checkedln/global.dart';
 import 'package:checkedln/res/colors/routes/route_constant.dart';
+import 'package:checkedln/views/auth/widget/auth_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -59,8 +61,8 @@ class _GetStartedState extends State<GetStarted> {
                   },
                   child: Obx(
                     () => _authController.profileImageUrl.isEmpty
-                        ? Image.asset(
-                            "assets/images/add_profile_pic.webp",
+                        ? SvgPicture.asset(
+                            "assets/images/add_profile_pic.svg",
                           ).marginOnly(bottom: 8.h)
                         : _authController.isImageUploading.value
                             ? CircularProgressIndicator()
@@ -143,25 +145,15 @@ class _GetStartedState extends State<GetStarted> {
                 ),
                 userName(_authController.bio, TextInputType.text,
                     "Bio. (eg.Cool)", false),
-                Obx(() => _authController.isCreatingAccount.value
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : authButton(
-                        getIt<ColorsFile>().primaryColor,
-                        Text(
-                          "Continue",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: colorsFile.whiteColor, fontSize: 16.sp),
-                        ),
-                        () async {
-                          bool check = _authController.validateGetStarted();
-                          if (check) {
-                            ctx!.push(RoutesConstants.authHelper);
-                          }
-                        },
-                      )),
+                AuthButton(
+                  text: "Continue",
+                  onPressed: () async {
+                    bool check = _authController.validateGetStarted();
+                    if (check) {
+                      ctx!.push(RoutesConstants.authHelper);
+                    }
+                  },
+                ),
               ],
             ),
           ],
